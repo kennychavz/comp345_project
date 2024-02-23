@@ -179,7 +179,7 @@ void testCharacter() {
     Item armor("Armor", 10); // This armor should add 10 to hit points
     testSubjectCharacter.equipItem(&armor, 0); // Equip armor in armor slot
 
-    Item shield("Shield", 3); // This shield should 3 to armor class
+    Item shield("Shield", 3); // This shield should add 3 to armor class
     testSubjectCharacter.equipItem(&shield, 1); // Equip shield in shield slot
 
     bool equipmentTestPassed = true;
