@@ -47,7 +47,7 @@ class Map {
       }
       dynamicX = x/2;
       dynamicY = y/2;
-      while (getRandomStep(arr, beginX, dynamicY)) {
+      while (getRandomStep(arr, dynamicX, dynamicY)) {
       }
 
       //printMap(arr);
@@ -63,9 +63,7 @@ class Map {
         } else {
           std::cout << "No path to the outside." << std::endl;
         }
-
       grid = arr;
-
       }
 
     // add chests, doors, etc
@@ -169,7 +167,7 @@ class Map {
             //cout << "You chose option 3." << endl;
             y += 1;
             break;
-      }
+        }
         // check if step exists
         if (indexExists(vec, x, y)) {
           vec[x][y] = 1;
@@ -205,12 +203,12 @@ int main() {
 
     // make a 15x15 map
     cout << "\nmaking a 10x10 map" <<endl;
-    Map myMap2(10, 10); // Creating a map, and checking validity
+    Map myMap2(8, 8); // Creating a map, and checking validity
     myMap2.printMap(); // printing map
 
     // make a 15x10 map
     cout << "\nmaking a 15x15 map" <<endl;
-    Map myMap3(15, 15); // Creating a map, and checking validity
+    Map myMap3(10, 10); // Creating a map, and checking validity
     myMap2.printMap(); // printing map
 
     return 0;
