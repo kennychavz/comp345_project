@@ -1,6 +1,9 @@
 #include <vector>
 #include <iostream>
 #include <random>
+#include <iomanip>
+#include <vector>
+
 
 using std::cout;
 using std::endl;
@@ -15,11 +18,67 @@ enum class CellType {
 class Map {
   private:
     int width, height;
-    vector<vector<int> > grid;
+    vector<vector<int> > map;
+    int currentPosX;
+    int currentPosY;
+
+    // Function to move the character on the map
+    void moveCharacter(int dx, int dy) {
+
+        // Example: Move the character position
+        int newX = currentPosX + dx;
+        int newY = currentPosY + dy;
+
+        printPos();
+        cout << "new x " << newX << endl;;
+        cout << "new y " << newY << endl;;
+
+        // Check if the new position is valid before updating
+        if (isValid(newX, newY, width, height) && isOpenPosition(newX, newY)) {
+          cout << "its valid" << endl;
+            currentPosX = newX;
+            currentPosY = newY;
+        }
+    }
 
   public:
-    Map(int width, int height) : width(width), height(height), grid(vector<vector<int> >(height, vector<int>(width))) {
+    Map(int width, int height) : width(width), height(height), map(vector<vector<int> >(height, vector<int>(width))) {
         makeMap(width, height);
+    }
+
+     // Function to get player feedback and update the map
+    void startGame() {
+        char choice;
+        while (true) {
+            std::cout << "Enter 'w' to move up, 's' to move down, 'a' to move left, 'd' to move right, or 'q' to quit: ";
+            std::cin >> choice;
+
+            // Clear the input buffer
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            switch (choice) {
+                case 'w':
+                    moveCharacter(0, -1);
+                    break;
+                case 's':
+                    moveCharacter(0, 1);
+                    break;
+                case 'a':
+                    moveCharacter(-1, 0);
+                    break;
+                case 'd':
+                    moveCharacter(1, 0);
+                    break;
+                case 'q':
+                    return; // Quit the function
+                default:
+                    std::cout << "Invalid choice. Try again." << std::endl;
+                    break;
+            }
+            printPos();
+            printMap();
+        }
     }
 
     void makeMap(int x, int y) {
@@ -36,6 +95,10 @@ class Map {
       int dynamicY = beginY;
       arr[beginX][beginY] = 1;
 
+      // set player position to beggining
+      currentPosX = beginX;
+      currentPosY = beginY;
+
       //printMap(arr);
 
       // MAKE A PATH TO OUTSIDE THE MAP
@@ -45,10 +108,10 @@ class Map {
       dynamicY = y/2;
       while (getRandomStep(arr, dynamicX, dynamicY)) {
       }
-      dynamicX = x/2;
-      dynamicY = y/2;
-      while (getRandomStep(arr, dynamicX, dynamicY)) {
-      }
+      // dynamicX = x/2;
+      // dynamicY = y/2;
+      // while (getRandomStep(arr, dynamicX, dynamicY)) {
+      // }
 
       //printMap(arr);
 
@@ -57,13 +120,13 @@ class Map {
 
       //printMap(arr);
 
-      // check if path exists
-      if (isValidPathExists(arr, beginX, beginY)) {
-          std::cout << "There is a path to the outside." << std::endl;
-        } else {
-          std::cout << "No path to the outside." << std::endl;
-        }
-      grid = arr;
+      // // check if path exists
+      // if (isValidPathExists(arr, beginX, beginY)) {
+      //     std::cout << "There is a path to the outside." << std::endl;
+      //   } else {
+      //     std::cout << "No path to the outside." << std::endl;
+      //   }
+      map = arr;
       }
 
     // add chests, doors, etc
@@ -104,36 +167,35 @@ class Map {
 
     bool isValid(int x, int y, int width, int height) {
     return x >= 0 && y >= 0 && x < width && y < height;
-}
+    }
 
-    bool isValidPathExists(std::vector<std::vector<int> >& grid, int x, int y) {
-      int width = grid[0].size();
-      int height = grid.size();
+    /*
+    ~~~~~~~~~~~~~~~~ UTIL METHODS ~~~~~~~~~~~~~~~~~~
+    */
+    bool isValidPathExists(std::vector<std::vector<int> >& map, int x, int y) {
+      int width = map[0].size();
+      int height = map.size();
 
       // Check if out of bounds (means we reached the edge)
       if (!isValid(x, y, width, height)) return true;
 
       // If not "2", not part of the path
-      if (grid[y][x] != 1) return false;
+      if (map[y][x] != 1) return false;
 
       // Mark as visited to avoid infinite loops
-      grid[y][x] = -1; // Temporary mark as visited
+      map[y][x] = -1; // Temporary mark as visited
 
       // Explore all 4 directions
-      bool up = isValidPathExists(grid, x, y - 1);
-      bool down = isValidPathExists(grid, x, y + 1);
-      bool left = isValidPathExists(grid, x - 1, y);
-      bool right = isValidPathExists(grid, x + 1, y);
+      bool up = isValidPathExists(map, x, y - 1);
+      bool down = isValidPathExists(map, x, y + 1);
+      bool left = isValidPathExists(map, x - 1, y);
+      bool right = isValidPathExists(map, x + 1, y);
 
-      // Reset to "2" after exploring (if you need to keep the grid intact)
-      grid[y][x] = 1;
+      // Reset to "2" after exploring (if you need to keep the map intact)
+      map[y][x] = 1;
       return up || down || left || right;
     }
 
-
-    /*
-    ~~~~~~~~~~~~~~~~ UTIL METHODS ~~~~~~~~~~~~~~~~~~
-    */
     bool indexExists(vector<vector<int> >& vec, int x, int y) {
       // Check if the x index is within bounds
       if (x >= 0 && x < vec.size()) {
@@ -149,7 +211,6 @@ class Map {
       std::random_device rd;  // Obtain a random number from hardware
       std::mt19937 gen(rd()); // Seed the generator
       std::uniform_int_distribution<> distr(0, 3); // Define the range
-
       switch (distr(gen)) {
         case 0:
             //cout << "You chose option 0." << endl;
@@ -176,18 +237,53 @@ class Map {
         else {
           return false;
         }
-
     }
 
-    //void printMap(vector<vector<int> > &arr) {
+    bool isOpenPosition(int newX, int newY) {
+      return (map[newX][newY] == 1 || map[newX][newY] == 3);
+    }
+
+    void printPos() {
+      cout << "current x " << currentPosX << endl;;
+      cout << "current y " << currentPosY << endl;;
+    }
+    // //void printMap(vector<vector<int> > &arr) {
+    // void printMap() {
+    //   printPos();
+    //   // Print the 2D array to verify it's filled with 0
+    //   for (size_t j = 0; j < map.size(); ++j) {
+    //     //cout << "x: " << i << endl;
+    //     // Iterate through each column in the row
+    //     for (size_t i = 0; i < map[i].size(); ++i) {
+    //       //cout << " y: " << j;
+    //     // Check the value and print the corresponding character
+    //     if (i == currentPosX && j == currentPosY) {
+    //       cout << " o ";
+    //     } else if (map[i][j] == 1) {
+    //         cout << " . ";
+    //     } else if (map[i][j] == 2) {
+    //         cout << " X ";
+    //     } else if (map[i][j] == 3) {
+    //         cout << " | ";
+    //     }
+    //     }
+    //     cout << endl; // Newline after each row for readability
+    //   }
+    // }
     void printMap() {
-      // Print the 2D array to verify it's filled with 0
-      for (size_t i = 0; i < grid.size(); ++i) {
-        // Iterate through each column in the row
-        for (size_t j = 0; j < grid[i].size(); ++j) {
-            std::cout << grid[i][j] << " ";
-        }
-        std::cout << std::endl; // Newline after each row for readability
+      for (size_t j = 0; j < map.size(); ++j) {
+          for (size_t i = 0; i < map[j].size(); ++i) {
+              if (i == currentPosX && j == currentPosY) {
+                  std::cout << std::setw(3) << std::setfill(' ') << "o";
+              } else if (map[i][j] == 1) {
+                std::cout << std::setw(3) << std::setfill(' ') << ".";
+              } else if (map[i][j] == 2) {
+                std::cout << std::setw(3) << std::setfill(' ') << "x";
+              } else if (map[i][j] == 3) {
+                std::cout << std::setw(3) << std::setfill(' ') << "|";
+              }
+          }
+        std::cout << std::endl;
       }
     }
 
@@ -198,18 +294,25 @@ int main() {
 
     // make a 10x10 map
     cout << "\nmaking a 5x5 map" <<endl;
-    Map myMap(5, 5); // Creating a map, and checking validity
+    Map myMap(10, 10); // Creating a map, and checking validity
     myMap.printMap(); // printing map
 
-    // make a 15x15 map
-    cout << "\nmaking a 10x10 map" <<endl;
-    Map myMap2(8, 8); // Creating a map, and checking validity
-    myMap2.printMap(); // printing map
+    // // make a 15x15 map
+    // cout << "\nmaking a 15x15 map" <<endl;
+    // Map myMap2(15, 15); // Creating a map, and checking validity
+    // myMap2.printMap(); // printing map
 
-    // make a 15x10 map
-    cout << "\nmaking a 15x15 map" <<endl;
-    Map myMap3(10, 10); // Creating a map, and checking validity
-    myMap2.printMap(); // printing map
+    // // make a 15x10 map
+    // cout << "\nmaking a 15x15 map" <<endl;
+    // Map myMap3(20, 20); // Creating a map, and checking validity
+    // myMap3.printMap(); // printing map
+
+    // // make a 15x10 map
+    // cout << "\nmaking a 15x15 map" <<endl;
+    // Map myMap4(30, 30); // Creating a map, and checking validity
+    // myMap4.printMap(); // printing map
+
+    myMap.startGame();
 
     return 0;
 }
