@@ -239,6 +239,10 @@ class Map {
         }
     }
 
+    const vector<vector<int> > getMap() const {
+      return map;
+    }
+
     bool isOpenPosition(int newX, int newY) {
       return (map[newX][newY] == 1 || map[newX][newY] == 3);
     }
@@ -286,6 +290,7 @@ class Map {
         std::cout << std::endl;
       }
     }
+
 
 
 };
