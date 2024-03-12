@@ -4,23 +4,26 @@
 #include <iomanip>
 #include <vector>
 
+#include "Observable.cpp"
+
 
 using std::cout;
 using std::endl;
 using std::vector;
 
-enum class CellType {
-    Empty,
-    Wall,
-    Occupied // This can be further detailed for characters, opponents, chests, etc.
-};
 
-class Map {
+class Map : public Observable {
+
   private:
+
+    // map dimensions
     int width, height;
     vector<vector<int> > map;
     int currentPosX;
     int currentPosY;
+
+    // observable
+    std::vector<Observer*> observers;
 
     // Function to move the character on the map
     void moveCharacter(int dx, int dy) {
@@ -39,6 +42,9 @@ class Map {
             currentPosX = newX;
             currentPosY = newY;
         }
+        else {
+          cout << "YOU CAN'T MOVE THERE"<<endl;
+        }
     }
 
   public:
@@ -46,8 +52,36 @@ class Map {
         makeMap(width, height);
     }
 
-     // Function to get player feedback and update the map
+    // ~~~~~~~~~~~~~~~~~~~ Observable ~~~~~~~~~~~~~~~~~~~~~
+    void addObserver(Observer* observer) {
+        observers.push_back(observer);
+    }
+
+    void removeObserver(Observer* observer) {
+        auto it = std::find(observers.begin(), observers.end(), observer);
+        if (it != observers.end()) {
+            observers.erase(it);
+        }
+    }
+    void notifyObservers() {
+        for (Observer* observer : observers) {
+            observer->update();
+        }
+    }
+    void updateMap() {
+        // Update map logic goes here...
+
+        // After updating, notify all observers
+        notifyObservers();
+    }
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    // ~~~~~~~~~~~~~~~~~~~ Game ~~~~~~~~~~~~~~~~~~~~~~~
     void startGame() {
+      // show the play the map
+      printMap();
+
+        // give inputs to user
         char choice;
         while (true) {
             std::cout << "Enter 'w' to move up, 's' to move down, 'a' to move left, 'd' to move right, or 'q' to quit: ";
@@ -76,11 +110,13 @@ class Map {
                     std::cout << "Invalid choice. Try again." << std::endl;
                     break;
             }
-            printPos();
-            printMap();
+
+            // notify observer of change to map
+            updateMap();
         }
     }
 
+    // ~~~~~~~~~~~~~~~~~~~ MAP CREATION ~~~~~~~~~~~~~~~~~~~~~
     void makeMap(int x, int y) {
       // fill with 0
       // Create a 2D vector filled with walls
@@ -113,9 +149,7 @@ class Map {
       // while (getRandomStep(arr, dynamicX, dynamicY)) {
       // }
 
-      //printMap(arr);
-
-      // load some
+      // load some chests, doors etc
       loadOccupiedCell(arr);
 
       //printMap(arr);
@@ -168,6 +202,8 @@ class Map {
     bool isValid(int x, int y, int width, int height) {
     return x >= 0 && y >= 0 && x < width && y < height;
     }
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /*
     ~~~~~~~~~~~~~~~~ UTIL METHODS ~~~~~~~~~~~~~~~~~~
@@ -242,34 +278,15 @@ class Map {
     bool isOpenPosition(int newX, int newY) {
       return (map[newX][newY] == 1 || map[newX][newY] == 3);
     }
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
+
+    // ~~~~~~~~~~~~~~~~~~~ OUTPUT ~~~~~~~~~~~~~~~~~~~~
     void printPos() {
       cout << "current x " << currentPosX << endl;;
       cout << "current y " << currentPosY << endl;;
     }
-    // //void printMap(vector<vector<int> > &arr) {
-    // void printMap() {
-    //   printPos();
-    //   // Print the 2D array to verify it's filled with 0
-    //   for (size_t j = 0; j < map.size(); ++j) {
-    //     //cout << "x: " << i << endl;
-    //     // Iterate through each column in the row
-    //     for (size_t i = 0; i < map[i].size(); ++i) {
-    //       //cout << " y: " << j;
-    //     // Check the value and print the corresponding character
-    //     if (i == currentPosX && j == currentPosY) {
-    //       cout << " o ";
-    //     } else if (map[i][j] == 1) {
-    //         cout << " . ";
-    //     } else if (map[i][j] == 2) {
-    //         cout << " X ";
-    //     } else if (map[i][j] == 3) {
-    //         cout << " | ";
-    //     }
-    //     }
-    //     cout << endl; // Newline after each row for readability
-    //   }
-    // }
     void printMap() {
       for (size_t j = 0; j < map.size(); ++j) {
           for (size_t i = 0; i < map[j].size(); ++i) {
@@ -286,33 +303,31 @@ class Map {
         std::cout << std::endl;
       }
     }
-
-
 };
 
-int main() {
+// int main() {
 
-    // make a 10x10 map
-    cout << "\nmaking a 5x5 map" <<endl;
-    Map myMap(10, 10); // Creating a map, and checking validity
-    myMap.printMap(); // printing map
+//     // make a 10x10 map
+//     cout << "\nmaking a 5x5 map" <<endl;
+//     Map myMap(10, 10); // Creating a map, and checking validity
+//     myMap.printMap(); // printing map
 
-    // // make a 15x15 map
-    // cout << "\nmaking a 15x15 map" <<endl;
-    // Map myMap2(15, 15); // Creating a map, and checking validity
-    // myMap2.printMap(); // printing map
+//     // // make a 15x15 map
+//     // cout << "\nmaking a 15x15 map" <<endl;
+//     // Map myMap2(15, 15); // Creating a map, and checking validity
+//     // myMap2.printMap(); // printing map
 
-    // // make a 15x10 map
-    // cout << "\nmaking a 15x15 map" <<endl;
-    // Map myMap3(20, 20); // Creating a map, and checking validity
-    // myMap3.printMap(); // printing map
+//     // // make a 15x10 map
+//     // cout << "\nmaking a 15x15 map" <<endl;
+//     // Map myMap3(20, 20); // Creating a map, and checking validity
+//     // myMap3.printMap(); // printing map
 
-    // // make a 15x10 map
-    // cout << "\nmaking a 15x15 map" <<endl;
-    // Map myMap4(30, 30); // Creating a map, and checking validity
-    // myMap4.printMap(); // printing map
+//     // // make a 15x10 map
+//     // cout << "\nmaking a 15x15 map" <<endl;
+//     // Map myMap4(30, 30); // Creating a map, and checking validity
+//     // myMap4.printMap(); // printing map
 
-    myMap.startGame();
+//     myMap.startGame();
 
-    return 0;
-}
+//     return 0;
+// }
