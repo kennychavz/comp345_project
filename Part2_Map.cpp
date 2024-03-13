@@ -38,6 +38,14 @@ class Map : public Observable {
         makeMap(width, height);
     }
 
+    // getter methods
+    int getSize() {
+      return map.size();
+    }
+    int getElement(int x, int y) {
+      return map[x][y];
+    }
+
     // ~~~~~~~~~~~~~~~~~~~ Observable ~~~~~~~~~~~~~~~~~~~~~
     void addObserver(Observer* observer) {
         observers.push_back(observer);
