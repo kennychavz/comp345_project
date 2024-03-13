@@ -1,13 +1,13 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
-#include "dice.h"
+#include "Part4_Dice.h"
 using namespace std;
 
 //constructor
 Dice::Dice() {
 
-   //generate srand unsigned int 
+   //generate srand unsigned int
     srand(static_cast<unsigned int>(time(nullptr)));
 }
 
@@ -25,22 +25,22 @@ int Dice::rollDice(string& expression) {
 
     //find d
     size_t posD = expression.find('d');
-    if (posD == string::npos) { //if 'd' not found in the expression, gives an error 
+    if (posD == string::npos) { //if 'd' not found in the expression, gives an error
 
         cerr << "Invalid dice expression\n";
         return 0;
     }
 
-    //find + for modifier 
-    int posModifier = expression.find('+'); 
+    //find + for modifier
+    int posModifier = expression.find('+');
 
-    //create substring for num and modifiier 
+    //create substring for num and modifiier
     try {
 
-        num = stoi(expression.substr(0, posD)); //parse sring into int 
+        num = stoi(expression.substr(0, posD)); //parse sring into int
         sides = stoi(expression.substr(posD + 1, posModifier));
 
-    } catch (const exception& e) { //throws an exception if the expression is not formatted correctly 
+    } catch (const exception& e) { //throws an exception if the expression is not formatted correctly
         cerr << "Invalid dice expression\n";
         return 0;
 
@@ -74,7 +74,7 @@ int Dice::rollDice(string& expression) {
         total += rollOnce(sides);
     }
 
-    return total + modifier; // adds the total with the modifier for the final result 
+    return total + modifier; // adds the total with the modifier for the final result
 
 }
 
@@ -84,7 +84,7 @@ int main() {
     string str;
     Dice dice;
 
-    str = "3d100[+9]"; //valid 
+    str = "3d100[+9]"; //valid
     //str = "6d5[+10]"; //invalid
 
     // cout << "Enter a dice expression in the form xdy[+z] : ";

@@ -11,6 +11,12 @@ using std::cout;
 using std::endl;
 using std::vector;
 
+enum class CellType {
+     Empty,
+     Wall,
+     Occupied // This can be further detailed for characters, opponents, chests, etc.
+ };
+
 
 class Map : public Observable {
 
