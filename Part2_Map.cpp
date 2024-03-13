@@ -37,6 +37,23 @@ class Map : public Observable {
     Map(int width, int height) : width(width), height(height), map(vector<vector<int> >(height, vector<int>(width))) {
         makeMap(width, height);
     }
+    // Constructor that takes a 2D matrix as argument
+    Map(const vector<vector<int>>& matrix) {
+        map = matrix;
+        width = matrix[0].size();
+        height = matrix.size();
+
+        // Find the initial position of the character
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                if (map[y][x] == 1) {
+                    currentPosX = x;
+                    currentPosY = y;
+                    return;
+                }
+            }
+        }
+    }
 
     // getter methods
     int getHeight() {
