@@ -39,8 +39,12 @@ class Map : public Observable {
     }
 
     // getter methods
-    int getSize() {
+    int getHeight() {
       return map.size();
+    }
+    // getter methods
+    int getWidth() {
+      return map[0].size();
     }
     int getElement(int x, int y) {
       return map[x][y];
