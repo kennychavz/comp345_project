@@ -160,20 +160,69 @@ class Builder {
     
     };
 
+class LevelBuilder : public Builder {
+private:
+    int level;
 
- 
-int main() {
+public:
+    LevelBuilder(int width, int height, int level) : Builder(width, height), level(level) {}
 
-    Builder builder(10, 10); // Create a builder with width 10 and height 10
-    builder.setFilename("MapFile.txt"); // Set the filename if you have a file to load the map from
+    // Override the build method to adapt map contents and items to the specific level
+    Map build() override {
+        Map map = Builder::build(); // Build the base map using parent's build method
 
-    // Build the map
-    Map map = builder.build();
+        // Adapt map contents based on the level
+        adaptMapToLevel(map);
+
+        return map;
+    }
+
+private:
+    void adaptMapToLevel(Map& map) {
+        switch (level) {
+            case 1:
+                // Example: If level 1, replace all 'x' with '.'
+                for (int row = 0; row < map.getHeight(); ++row) {
+                    for (int col = 0; col < map.getWidth(); ++col) {
+                        if (map.getCell(col, row) == 'x') {
+                            map.setCell(col, row, '.');
+                        }
+                    }
+                }
+                break;
+            case 2:
+                // Example: If level 2, replace all '.' with 'x'
+                for (int row = 0; row < map.getHeight(); ++row) {
+                    for (int col = 0; col < map.getWidth(); ++col) {
+                        if (map.getCell(col, row) == '.') {
+                            map.setCell(col, row, 'x');
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+    }
+};
+
+// int main() {
+
+//     Builder builder(10, 10); // Create a builder with width 10 and height 10
+//     builder.setFilename("MapFile.txt"); // Set the filename if you have a file to load the map from
+
+//     LevelBuilder builder(10, 10, 1); // Create a level builder with width 10, height 10, and level 1
+//     builder.setFilename("MapFile.txt"); // Set the filename if you have a file to load the map from
+
+
+//     // Build the map
+//     Map map = builder.build();
     
 
-    // Print the map
-    map.printMap();
-    //map.startGame();
+//     // Print the map
+//     map.printMap();
+//     //map.startGame();
 
-    return 0;
-}
+//     return 0;
+// }
