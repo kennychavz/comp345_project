@@ -1,16 +1,17 @@
-/*
- This file implements and allows generation of player characters based on common d20 game rules.
- It includes the generation of random ability scores using a 3d6 method i.e. rolling three six-sided dice (3d6).
- Characters can equip items across six defined slots (Armor, Shield, Weapon, Boots, Ring, Helmet), each affecting the character's
- stats in ways typical of d20 systems—such as modifying hit points, armor class, and attack bonuses.
-*/
-
 #include <iostream>
 #include <string>
-#include <ctime>
 #include <vector>
+#include <list> // For the observer list
 
 using namespace std;
+
+class Character;
+
+// observer interface
+class ICharacterObserver {
+public:
+    virtual void onCharacterUpdate(Character *character) = 0;
+};
 
 class Item
 {
@@ -20,8 +21,7 @@ public:
     Item(string name, int bonus) : name(name), bonus(bonus) {}
 };
 
-class Character
-{
+class Character {
 private:
     int level;
     int abilityScores[6]; // STR, DEX, CON, INT, WIS, CHA
@@ -61,13 +61,14 @@ private:
     void calculateDamageBonus() {
         damageBonus = abilityModifiers[0]; // STR modifier
     }
-
+    list<ICharacterObserver*> observers; // List to store observers
 
 public:
     Character(int level) : level(level)
     {
         srand((unsigned)time(0)); // To seed the random number generator used by rand().
         // To ensure the random number generator is seeded with a unique value based on current time.
+        // Assuming the character creation has at least 1 minute interval.
         generateAbilityScores();
         calculateHitPoints();
         calculateArmorClass();
@@ -79,8 +80,21 @@ public:
         }
     }
 
-    void equipItem(Item *item, int slot)
-    {
+    void attachObserver(ICharacterObserver *observer) {
+        observers.push_back(observer);
+    }
+
+    void detachObserver(ICharacterObserver *observer) {
+        observers.remove(observer);
+    }
+
+    void notifyObservers() {
+        for (auto observer : observers) {
+            observer->onCharacterUpdate(this);
+        }
+    }
+
+    void equipItem(Item *item, int slot) {
         if (slot >= 0 && slot < 6)
         {
             equipment[slot] = item;
@@ -116,12 +130,13 @@ public:
                     // If somehow an invalid slot is passed, do nothing
                     break;
             }
+            notifyObservers();
         }
     }
 
     void displayCharacter()
     {
-        cout << "Level: " << level << endl;
+        cout << "\nLevel: " << level << endl;
         cout << "Ability Scores and Modifiers: " << endl;
         string abilities[6] = {"STR (Strength)", "DEX (Dexterity)", "CON (Constitution)",
                                "INT (Intelligence)", "WIS (Wisdom)", "CHA (Charisma)"};
@@ -152,7 +167,17 @@ public:
     }
 };
 
-// Character Testing Method
+// The observer reacts to changes in the subject
+class CharacterObserver : public ICharacterObserver {
+public:
+    void onCharacterUpdate(Character *character) override {
+        // Re-display character view
+        cout << "\nCharacter View Updated:\n";
+        character->displayCharacter();
+    }
+};
+
+//Character Testing Method
 void testCharacter() {
     Character testSubjectCharacter(20);
     auto scores = testSubjectCharacter.getAbilityScores();
@@ -179,7 +204,7 @@ void testCharacter() {
     Item armor("Armor", 10); // This armor should add 10 to hit points
     testSubjectCharacter.equipItem(&armor, 0); // Equip armor in armor slot
 
-    Item shield("Shield", 3); // This shield should add 3 to armor class
+    Item shield("Shield", 3); // This shield should 3 to armor class
     testSubjectCharacter.equipItem(&shield, 1); // Equip shield in shield slot
 
     bool equipmentTestPassed = true;
@@ -199,17 +224,43 @@ void testCharacter() {
     cout << (equipmentTestPassed ? "Test 2: Equipment stat modification tests passed." : "Test 2: Equipment stat modification tests failed.") << endl;
 }
 
+// Observer Pattern Testing
+void testObserverPattern() {
+    Character myCharacter(5);
+    CharacterObserver observer1;
+    CharacterObserver observer2;
 
-int main()
-{
-    cout << "Running tests...\n";
-    testCharacter(); // Run the test
+    // Test 1: Basic Attachment and Update
+    myCharacter.attachObserver(&observer1);
+    cout << "\nobserver1 attached." << endl;
+    myCharacter.equipItem(new Item("Iron Sword", 2), 2); // Should trigger update
+
+    // Test 2: Multiple Observers
+    myCharacter.attachObserver(&observer2);
+    cout << "\nobserver1 & observer2 attached." << endl;
+    myCharacter.equipItem(new Item("Shield", 2), 1);   // Should update both
+
+    // Test 3: Detachment
+    myCharacter.detachObserver(&observer1);
+    cout << "\nobserver1 detached." << endl;
+    myCharacter.equipItem(new Item("Helmet", 1), 5); // Only observer2 should update
+}
+
+// Driver class
+int main() {
+    cout << "\nRunning tests...\n\n";
+    testCharacter();
+    testObserverPattern();
 
     cout << "\n>>>>>>>>>>>>>>>>>>> Character Creation <<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n";
 
     Character fighter(20); // ex: Create a fighter with a given level
     fighter.displayCharacter(); // Display the initial character
 
+    CharacterObserver observer;  // Create an observer
+    fighter.attachObserver(&observer);  // Attach observer to character
+
+    // Make changes that trigger updates
     cout << "\n>>>>>>>>>>>>>>>>>>>>>>> Equip Items <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n";
 
     // NOTE: equipments[0:Armor, 1:Shield, 2:Weapon, 3:Boots, 4:Ring, 5:Helmet]
@@ -226,9 +277,5 @@ int main()
     fighter.equipItem(&shield, 1); // ex: Equip steele shield in shield slot
     cout << "Steele Shield equipped with a Armor Bonus of 1.\n\n";
 
-    // Display character again with updated effects
-    fighter.displayCharacter();
-
     return 0;
 }
-
