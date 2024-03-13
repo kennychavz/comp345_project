@@ -31,27 +31,7 @@ class Map : public Observable {
     // observable
     std::vector<Observer*> observers;
 
-    // Function to move the character on the map
-    void moveCharacter(int dx, int dy) {
 
-        // Example: Move the character position
-        int newX = currentPosX + dx;
-        int newY = currentPosY + dy;
-
-        printPos();
-        cout << "new x " << newX << endl;;
-        cout << "new y " << newY << endl;;
-
-        // Check if the new position is valid before updating
-        if (isValid(newX, newY, width, height) && isOpenPosition(newX, newY)) {
-          cout << "its valid" << endl;
-            currentPosX = newX;
-            currentPosY = newY;
-        }
-        else {
-          cout << "YOU CAN'T MOVE THERE"<<endl;
-        }
-    }
 
   public:
     Map(int width, int height) : width(width), height(height), map(vector<vector<int> >(height, vector<int>(width))) {
@@ -75,6 +55,9 @@ class Map : public Observable {
         }
     }
     void updateMap() {
+      cout << "inside of update"<<endl;
+      cout << "new posX" << currentPosX<<endl;
+      cout << "new posY" << currentPosY<<endl;
         // Update map logic goes here...
 
         // After updating, notify all observers
@@ -82,45 +65,7 @@ class Map : public Observable {
     }
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    // ~~~~~~~~~~~~~~~~~~~ Game ~~~~~~~~~~~~~~~~~~~~~~~
-    void startGame() {
-      // show the play the map
-      printMap();
 
-        // give inputs to user
-        char choice;
-        while (true) {
-            std::cout << "Enter 'w' to move up, 's' to move down, 'a' to move left, 'd' to move right, or 'q' to quit: ";
-            std::cin >> choice;
-
-            // Clear the input buffer
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-            switch (choice) {
-                case 'w':
-                    moveCharacter(0, -1);
-                    break;
-                case 's':
-                    moveCharacter(0, 1);
-                    break;
-                case 'a':
-                    moveCharacter(-1, 0);
-                    break;
-                case 'd':
-                    moveCharacter(1, 0);
-                    break;
-                case 'q':
-                    return; // Quit the function
-                default:
-                    std::cout << "Invalid choice. Try again." << std::endl;
-                    break;
-            }
-
-            // notify observer of change to map
-            updateMap();
-        }
-    }
 
     // ~~~~~~~~~~~~~~~~~~~ MAP CREATION ~~~~~~~~~~~~~~~~~~~~~
     void makeMap(int x, int y) {
@@ -211,6 +156,30 @@ class Map : public Observable {
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    // ~~~~~~~~~~~~~~~~Map Changes~~~~~~~~~~~~~~~~~~
+
+    // Function to move the character on the map
+    void moveCharacter(int dx, int dy) {
+
+        // Example: Move the character position
+        int newX = currentPosX + dx;
+        int newY = currentPosY + dy;
+
+        // printPos();
+        // cout << "new x " << newX << endl;;
+        // cout << "new y " << newY << endl;;
+
+        // Check if the new position is valid before updating
+        if (isValid(newX, newY, width, height) && isOpenPosition(newX, newY)) {
+          cout << "its valid" << endl;
+            currentPosX = newX;
+            currentPosY = newY;
+        }
+        else {
+          cout << "YOU CAN'T MOVE THERE"<<endl;
+        }
+    }
+
     /*
     ~~~~~~~~~~~~~~~~ UTIL METHODS ~~~~~~~~~~~~~~~~~~
     */
@@ -298,6 +267,7 @@ class Map : public Observable {
       cout << "current y " << currentPosY << endl;;
     }
     void printMap() {
+      printPos();
       for (size_t j = 0; j < map.size(); ++j) {
           for (size_t i = 0; i < map[j].size(); ++i) {
               if (i == currentPosX && j == currentPosY) {
