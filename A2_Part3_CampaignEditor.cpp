@@ -17,15 +17,15 @@ class Campaign
 
 public:
     vector<Map> maps;
-    int canvasWidth = 80;
+    int canvasWidth = 200;
     int canvasHeight = 20;
-    vector<vector<int> > canvas;
+    vector<vector<int>> canvas;
     int cursorX = 0;
     int cursorY = 0;
 
     Campaign()
     {
-        canvas = vector<vector<int> >(canvasWidth, vector<int>(canvasHeight, 0));
+        canvas = vector<vector<int>>(canvasWidth, vector<int>(canvasHeight, 0));
     }
 
     void addMap(Map map)
@@ -67,7 +67,9 @@ public:
                 else if (canvas[j][i] == 3)
                 {
                     cout << "|  ";
-                } else {
+                }
+                else
+                {
                     // Empty canvas cell
                     cout << "   ";
                 }
@@ -122,7 +124,7 @@ public:
         return true;
     }
 
-    void changeCellType (int x, int y, int newType)
+    void changeCellType(int x, int y, int newType)
     {
         canvas[x][y] = newType;
     }
@@ -138,6 +140,7 @@ int main()
     campaign.addMap(map1);
     campaign.addMap(map2);
     campaign.addMap(map3);
+
 
     // Accumulate starting positions for each map to render them next to each other
     int startingPosAcc = 0;
@@ -167,58 +170,68 @@ int main()
 
     // Interactive loop
     char input;
+    string filename;
+    int width, height;
     while (true)
     {
-        cout << "Enter a hotkey [q]uit, [s]ave, l[o]ad, [m]odify + (1,2,3) to change type, hjkl to move cursor: ";
+        cout << "Enter a hotkey [q]uit, [c]reate a new map + [width],[height],[s]ave, l[o]ad, [m]odify + (1,2,3) to change type, hjkl to move cursor: ";
         cin >> input;
-        cout << "X: " << campaign.cursorX << " Y: " << campaign.cursorY <<endl;
+        cout << "X: " << campaign.cursorX << " Y: " << campaign.cursorY << endl;
 
-        string filename;
         switch (input)
         {
-            case 'q':
-                // Quit the program
-                return 0;
-            case 's':
-                // Save the campaign
-                cout << "Enter a filename: ";
-                cin >> filename;
-                campaign.saveCampaign(filename);
-                cout << "Campaign saved." << endl;
-                break;
-            case 'o':
-                // Load a campaign
-                cout << "Enter a filename: ";
-                cin >> filename;
-                campaign.loadCampaign(filename);
-                cout << "Campaign loaded." << endl;
-                break;
-            case 'm':
-                // Modify the cell at the cursor
-                cout << "Enter a new type for the cell (1, 2, 3): " << endl;;
-                int newType;
-                cin >> newType;
-                campaign.changeCellType(campaign.cursorX, campaign.cursorY, newType);
-                break;
-            case 'h':
-                // Move the cursor left
-                campaign.moveCursor(-1, 0);
-                break;
-            case 'j':
-                // Move the cursor down
-                campaign.moveCursor(0, 1);
-                break;
-            case 'k':
-                // Move the cursor up
-                campaign.moveCursor(0, -1);
-                break;
-            case 'l':
-                // Move the cursor right
-                campaign.moveCursor(1, 0);
-                break;
-            default:
-                cout << "Invalid hotkey. Try again." << endl;
-                break;
+        case 'q':
+            // Quit the program
+            return 0;
+        case 'c':
+            cout << "Enter width: ";
+            cin >> width;
+            cout << " Enter height: ";
+            cin >> height;
+            cout << width << " " << height << endl;
+            campaign.addMap(Map(width,height));
+            break;
+        case 's':
+            // Save the campaign
+            cout << "Enter a filename: ";
+            cin >> filename;
+            campaign.saveCampaign(filename);
+            cout << "Campaign saved." << endl;
+            break;
+        case 'o':
+            // Load a campaign
+            cout << "Enter a filename: ";
+            cin >> filename;
+            campaign.loadCampaign(filename);
+            cout << "Campaign loaded." << endl;
+            break;
+        case 'm':
+            // Modify the cell at the cursor
+            cout << "Enter a new type for the cell (1, 2, 3): " << endl;
+            ;
+            int newType;
+            cin >> newType;
+            campaign.changeCellType(campaign.cursorX, campaign.cursorY, newType);
+            break;
+        case 'h':
+            // Move the cursor left
+            campaign.moveCursor(-1, 0);
+            break;
+        case 'j':
+            // Move the cursor down
+            campaign.moveCursor(0, 1);
+            break;
+        case 'k':
+            // Move the cursor up
+            campaign.moveCursor(0, -1);
+            break;
+        case 'l':
+            // Move the cursor right
+            campaign.moveCursor(1, 0);
+            break;
+        default:
+            cout << "Invalid hotkey. Try again." << endl;
+            break;
         }
         // Reprint canvas to reflect changes
         campaign.printCanvas();
