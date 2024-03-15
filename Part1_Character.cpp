@@ -230,20 +230,19 @@ void testObserverPattern() {
     CharacterObserver observer1;
     CharacterObserver observer2;
 
-    // Test 1: Basic Attachment and Update
+    // Test 1: Attaching Multiple Observers
     myCharacter.attachObserver(&observer1);
-    cout << "\nobserver1 attached." << endl;
-    myCharacter.equipItem(new Item("Iron Sword", 2), 2); // Should trigger update
-
-    // Test 2: Multiple Observers
     myCharacter.attachObserver(&observer2);
-    cout << "\nobserver1 & observer2 attached." << endl;
-    myCharacter.equipItem(new Item("Shield", 2), 1);   // Should update both
+    std::cout << "\nTwo observers attached. Equipping item (should update BOTH)...\n";
+    myCharacter.equipItem(new Item("Iron Armor", 5), 0);
+    // Replace visual inspection with checks for both observer1 and observer2
 
-    // Test 3: Detachment
+    // Test 2: Detaching One Observer
     myCharacter.detachObserver(&observer1);
-    cout << "\nobserver1 detached." << endl;
-    myCharacter.equipItem(new Item("Helmet", 1), 5); // Only observer2 should update
+    std::cout << "\nObserver 1 detached. Equipping item (should update ONLY observer2)...\n";
+    myCharacter.equipItem(new Item("Helmet", 1), 5);
+    // Replace visual inspection with checks for observer1 (no update) and observer 2
+
 }
 
 // Driver class
@@ -267,15 +266,15 @@ int main() {
 
     Item sword("Sword", 2);
     fighter.equipItem(&sword, 2);// ex: Equip sword in weapon slot
-    cout << "Sword equipped with a Attack Bonus of 2.\n\n";
+    cout << "\nSword equipped with a Attack Bonus of 2.\n";
 
     Item armor("Breastplate", 3);
     fighter.equipItem(&armor, 0); // ex: Equip breastplate in armor slot
-    cout << "Breastplate equipped with a Hit Points Increase of 3.\n\n";
+    cout << "\nBreastplate equipped with a Hit Points Increase of 3.\n";
 
     Item shield("Steele Shield", 1);
     fighter.equipItem(&shield, 1); // ex: Equip steele shield in shield slot
-    cout << "Steele Shield equipped with a Armor Bonus of 1.\n\n";
+    cout << "\nSteele Shield equipped with a Armor Bonus of 1.\n";
 
     return 0;
 }
