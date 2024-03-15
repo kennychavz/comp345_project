@@ -11,18 +11,20 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-enum class CellType {
-     Empty,
-     Wall,
-     Occupied // This can be further detailed for characters, opponents, chests, etc.
- };
+/* positions
+[0] = current position
+[1] = wall
+[2] = open space
+[3] = chest
+
+*/
+
 
 
 class Map : public Observable {
 
-  private:
-
-    // map dimensions
+  public:
+  // map dimensions
     int width, height;
     vector<vector<int> > map;
     int currentPosX;
@@ -30,10 +32,6 @@ class Map : public Observable {
 
     // observable
     std::vector<Observer*> observers;
-
-
-
-  public:
     Map(int width, int height) : width(width), height(height), map(vector<vector<int> >(height, vector<int>(width))) {
         makeMap(width, height);
     }
@@ -46,7 +44,7 @@ class Map : public Observable {
         // Find the initial position of the character
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                if (map[y][x] == 1) {
+                if (map[y][x] == 0) {
                     currentPosX = x;
                     currentPosY = y;
                     return;
