@@ -3,6 +3,7 @@
 #include <random>
 #include <iomanip>
 #include <vector>
+#include <string>
 
 #include "Observable.cpp"
 
@@ -10,6 +11,7 @@
 using std::cout;
 using std::endl;
 using std::vector;
+using std::string;
 
 /* positions
 [0] = current position
@@ -19,6 +21,7 @@ using std::vector;
 
 */
 
+vector<string> availableNames = {"Spain", "France", "Portugal", "Denmark", "Germany", "Italy", "Greece"};
 
 
 class Map : public Observable {
@@ -30,16 +33,28 @@ class Map : public Observable {
     int currentPosX;
     int currentPosY;
 
+    // name
+    string mapName;
+
     // observable
     std::vector<Observer*> observers;
     Map(int width, int height) : width(width), height(height), map(vector<vector<int> >(height, vector<int>(width))) {
         makeMap(width, height);
     }
+
+    // default constructor
+    Map() {
+
+    }
     // Constructor that takes a 2D matrix as argument
-    Map(const vector<vector<int>>& matrix) {
+    Map(const vector<vector<int> >& matrix, string name) {
         map = matrix;
         width = matrix[0].size();
         height = matrix.size();
+        mapName = name;
+
+        currentPosX = width/2;
+        currentPosY = height/2;
 
         // Find the initial position of the character
         for (int y = 0; y < height; ++y) {
@@ -210,6 +225,9 @@ class Map : public Observable {
     /*
     ~~~~~~~~~~~~~~~~ UTIL METHODS ~~~~~~~~~~~~~~~~~~
     */
+   void setCell(int x, int y, int type) {
+      map[y][x] = type;
+    }
     bool isValidPathExists(std::vector<std::vector<int> >& map, int x, int y) {
       int width = map[0].size();
       int height = map.size();
@@ -310,6 +328,8 @@ class Map : public Observable {
         std::cout << std::endl;
       }
     }
+
+
 };
 
 // int main() {

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "Part2_Map.cpp"
+//#include "Part2_Map.cpp"
 
 using std::cin;
 using std::cout;
@@ -12,17 +12,91 @@ using std::ofstream;
 using std::string;
 using std::vector;
 
+void saveMap(Map map, string& filename) {
+    cout<< "inside of save map"<< endl;
+    cout << "filename" << filename<< endl;
+    ofstream file(filename);
+    if (file.is_open()) {
+
+      cout<< "inside of open file in save map"<< endl;
+
+        for (int j = 0; j < map.getHeight(); ++j) {
+            for (int i = 0; i < map.getWidth(); ++i) {
+
+                file << map.getElement(j, i);
+            }
+            file << endl;
+        }
+        file.close();
+
+    } else {
+        cout << "Unable to open file." << endl;
+    }
+}
+Map readMapFromFile(const string& filename) {
+    ifstream file(filename);
+    vector<vector<int> > map;
+    string line;
+    if (file.is_open()) {
+        while (getline(file, line)) {
+        vector<int> row;
+        for (char c : line) {
+            //cout << c << endl;
+            int value = c - '0';
+            //cout << value << endl;
+            // cout << c << endl;
+            // switch(c) {
+            //     case '':
+            //         value = 1;
+            //         break;
+            //     case 'x':
+            //         value = 2;
+            //         break;
+            //     case '|':
+            //         value = 3;
+            //         break;
+            //     default:
+            //         break;
+            // }
+            row.push_back(value);
+
+        }
+        // string choice;
+        //cout<< map[0][0] << endl;
+        // cin>> choice;
+        map.push_back(row);
+
+        }
+        //map.push_back(row);
+    }
+    file.close();
+
+    // turn to map
+    Map mapConverted = Map(map, filename);
+
+
+    return mapConverted;
+
+}
+
 class CampaignEditor
 {
 private:
-    Map campaign;
 
 public:
-    CampaignEditor() : campaign(0,0) {}
+    Map campaign;
+
+    CampaignEditor() : campaign() {}
 
     void appendMap(Map map)
     {
-        campaign.map.insert(campaign.map.end(), map.map.begin(), map.map.end());
+        //campaign.map.insert(campaign.map.end(), map.map.begin(), map.map.end());
+        campaign = map;
+
+        // Create a MapObserver instance and pass the Map reference to it
+        MapObserver observer(campaign);
+        // Add the observer to the map
+        campaign.addObserver(&observer);
     }
 
     void start()
@@ -59,12 +133,12 @@ public:
                 cout << "CampaignEditor loaded." << endl;
                 break;
             case 'm':
-                // Modify the cell at the cursor
-                cout << "Enter a new type for the cell (1, 2, 3): " << endl;
-                int newType;
-                cin >> newType;
-                campaign.(campaign.cursorX, campaign.cursorY, newType);
-                break;
+                // // Modify the cell at the cursor
+                // cout << "Enter a new type for the cell (1, 2, 3): " << endl;
+                // int newType;
+                // cin >> newType;
+                // campaign.(campaign.cursorX, campaign.cursorY, newType);
+                // break;
             case 'h':
                 // Move the cursor left
                 campaign.moveCharacter(-1, 0);
@@ -98,11 +172,18 @@ public:
         campaign.printMap();
     }
 
-    void loadCampaign(string filename)
+    Map loadCampaign(string filename)
     {
+      // MapDirector director = MapDirector();
+      // director.readMapFromFile(filename);
+      return readMapFromFile(filename);
     }
 
     void saveCampaign(string filename)
     {
+
+      cout << "inside of save campagin, filename is " <<filename << endl;
+      string filename2 =  "data/maps/" + filename;
+      saveMap(campaign,filename2);
     }
 };
