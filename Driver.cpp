@@ -4,12 +4,15 @@
 #include "MapObserver.cpp"  // Include MapObserver class file
 //#include "Part4_MapBuilder.cpp"
 #include "A2_Part3_CampaignEditor.cpp"
-#include "Part1_Character.cpp"
+//#include "Part1_Character.cpp"
 #include "Part4_MapBuilder.cpp"
 #include <cstdlib>
 #include <filesystem>
+#include <thread>
+#include <chrono>
 
 namespace fs = std::filesystem;
+using std::exit;
 
 vector<string> getFilenames() {
     // Path to the folder
@@ -30,19 +33,327 @@ vector<string> getFilenames() {
     return filenames;
 }
 
+void greetingScreen() {
+  cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WELCOME ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" << endl;
+   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TO KUTA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+
+}
+void congratulationsScreen() {
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CONGRATULATIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~YOU WON~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+}
+void defeatScreen() {
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SORRY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ YOU  LOST ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+}
+void nothingScreen() {
+cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+}
+void attackScreen(int attackDmg) {
+   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << attackDmg << "DMG ATTACK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+}
+void fatalScreen() {
+   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FATAL BLOW ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+}
+void deathScreen() {
+   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ YOU DIED ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+}
+void defenseScreen(int attackTaken) {
+   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << attackTaken << "DMG DEFENSE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+}
+
+// void characterSelection(CampaignEditor& campaign) {
+//   char choice;
+
+//   while (true) {
+//     // Clear the input buffer
+//     cout << "Enter 'c' to create a character, 's' to move down, 'a' to move left, 'd' to move right, or 'q' to quit: ";
+//     cin.clear();
+//     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+//     cin >> choice; // Read user input into 'choice'
+
+//       switch (choice) {
+//           case 'w':
+//               map.moveCharacter(0, -1);
+//               break;
+//           case 's':
+//               map.moveCharacter(0, 1);
+//               break;
+//           case 'a':
+//               map.moveCharacter(-1, 0);
+//               break;
+//           case 'd':
+//               map.moveCharacter(1, 0);
+//               break;
+//           case 'q':
+//               return; // Quit the function
+//           default:
+//               std::cout << "Invalid choice. Try again." << std::endl;
+//               break;
+//       }
+//     }
+// }
+
 // ~~~~~~~~~~~~~~~~~~~ Game ~~~~~~~~~~~~~~~~~~~~~~~
+void printHpBar(int& totalHp, int& remainingHp, char selection) {
+    // if
+    if (selection == 'v') { cout << "\t\t\t\t\t\tVillain HP: [ ";}
+    if (selection == 'h') { cout << "Hero HP: [ ";}
+
+  // print hp bar
+    double percentageHp = static_cast<double>(remainingHp) / totalHp;
+
+    cout << "";
+    for (double i = 0; i < 1; i = i + 0.1) {
+      if (i < percentageHp) {
+        cout << "||||";
+      }
+      else {
+        cout << " - ";
+      }
+    }
+    cout << "]" << endl;
+
+}
+
+void printInline(Character& hero, Character& villain, int heroY, int heroX, int villainY, int villainX, char select) {
+    std::system("clear");
+    if (select== 'h') {cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HIGHFIVE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;}
+    else {
+      cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BATTLE SCENE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+    }
+    // Define the dimensions of the battle scene
+    const int width = 70;
+    const int height = 5;
+
+    // Define the positions of the little guy and the bad guy
+    // int heroX = 15;
+    // int heroY = height - 1;
+    // int villainX = width - 2;
+    // int villainY = 0;
+
+    // retrieve hp of characters
+    int villainTotalHp = villain.hitPoints;
+    int villainRemainingHp = villain.remainingHitPoints;
+    int heroTotalHp = hero.hitPoints;
+    int heroRemainingHp = hero.remainingHitPoints;
+
+    // villain Hp
+    printHpBar(villainTotalHp, villainRemainingHp, 'v');
+
+    cout << endl;
+
+    // Print the battle scene
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            if (x == heroX && y == heroY)  {
+                // Print the little guy and the bad guy
+                cout << ":)";
+            }else if (x == villainX && y == villainY) {
+              cout << ">:(";
+            } else {
+                // Print empty space
+                std::cout << " ";
+            }
+        }
+        std::cout << std::endl;  // Move to the next line
+    }
+
+    cout << endl;
+
+    // Hero Hp
+    printHpBar(heroTotalHp, heroRemainingHp, 'h');
+
+    cout << endl;
+  }
+
+void printFriendly(Character &hero, Character & villain) {
+
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+  for (int i = 1; i< 3; i++) {
+    if (i== 3) {
+      printInline(hero, villain, 4-i, 15+14*i, 5-i, 68-14*i, 'f');
+    }
+    else {
+      printInline(hero, villain, 4-i, 15+14*i, 5-i, 68-14*i, 'h');
+    }
+    nothingScreen();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+  }
+}
+
+
+void printBattleScene(Character& hero, Character& villain) {
+  std::system("clear");
+  cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BATTLE SCENE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+    // Define the dimensions of the battle scene
+    const int width = 70;
+    const int height = 5;
+
+    // Define the positions of the little guy and the bad guy
+    int heroX = 15;
+    int heroY = height - 1;
+    int villainX = width - 2;
+    int villainY = 0;
+
+    // retrieve hp of characters
+    int villainTotalHp = villain.hitPoints;
+    int villainRemainingHp = villain.remainingHitPoints;
+    int heroTotalHp = hero.hitPoints;
+    int heroRemainingHp = hero.remainingHitPoints;
+
+    // villain Hp
+    printHpBar(villainTotalHp, villainRemainingHp, 'v');
+
+    cout << endl;
+
+    // Print the battle scene
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            if (x == heroX && y == heroY)  {
+                // Print the little guy and the bad guy
+                cout << ":)";
+            }else if (x == villainX && y == villainY) {
+              cout << ">:(";
+            } else {
+                // Print empty space
+                std::cout << " ";
+            }
+        }
+        std::cout << std::endl;  // Move to the next line
+    }
+
+    cout << endl;
+
+    // Hero Hp
+    printHpBar(heroTotalHp, heroRemainingHp, 'h');
+
+    cout << endl;
+
+}
+
+void battle(Character& hero, Character& villain) {
+    printBattleScene(hero, villain);
+  while (true) {
+
+    char choice;
+    cout << "\tPress [a] to Attack \t\t\tPress [d] to Defend\t\t\t Press [f] to be Friendly\n";
+    cin.clear();
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    cin >> choice; // Read user input into 'choice'
+
+    // vars
+    bool res;
+    int heroDmg = hero.getAttackBonus() * 0.4;
+    int villainDmg = villain.getAttackBonus() * 0.4;
+
+    switch (choice) {
+
+      case 'a':
+        // attack
+        res = villain.takeAttack(heroDmg);
+        printBattleScene(hero, villain);
+
+
+        if (res) {
+            fatalScreen();
+             congratulationsScreen();
+
+             // call the logs
+              return;
+          } else {
+            attackScreen(heroDmg);
+            //cout << "\tVillain:" << endl;
+            //villain.displayHitPoints();
+            break;
+          }
+          break;
+
+      case 'd':
+        // defend
+        res = hero.takeAttack(villainDmg);
+        printBattleScene(hero, villain);
+        defenseScreen(villainDmg);
+
+        if (res) {
+              fatalScreen();
+             defeatScreen();
+
+             // call the logs
+              return;
+          } else {
+            //cout << "\tVillain:" << endl;
+            //villain.displayHitPoints();
+            break;
+          }
+          break;
+        break;
+
+      case 'f':
+        // friendly
+        printFriendly(hero, villain);
+
+        // if (res) {
+        //      defeatScreen();
+        //       return;
+        //   } else {
+        //     //cout << "\tVillain:" << endl;
+        //     //villain.displayHitPoints();
+        //     break;
+        //   }
+        //   break;
+        break;
+      }
+  }
+
+}
+
+void chooseStrategy(Character& hero, Character& villain) {
+  // print battle scene
+  char choice;
+  cout << "Press [x] to battle ";
+  cin.clear();
+  cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  cin >> choice; // Read user input into 'choice'
+
+    switch (choice) {
+      case 'x':
+        battle(hero, villain);
+      default:
+      std::cout << "Invalid choice. Try again." << std::endl;
+      break;
+    }
+
+}
+
 void startGame(Map& map) {
   char choice;
 
   while (true) {
   // Clear the input buffer
   map.printMap();
+
+  //
+  cout << map.checkForEnnemies() << endl;
+  if (map.checkForEnnemies()) {
+    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VILLAIN FOUND~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" << endl;
+    chooseStrategy(map.hero, map.villain);
+  }
+
+  // check if theres is an enemy nearby
   cout << "Enter 'w' to move up, 's' to move down, 'a' to move left, 'd' to move right, or 'q' to quit: ";
   cin.clear();
   cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   cin >> choice; // Read user input into 'choice'
 
     switch (choice) {
+        // case 't':
+        //     map.tryMove('');
         case 'w':
             map.moveCharacter(0, -1);
             break;
@@ -76,6 +387,7 @@ int startCampaign(CampaignEditor& campaign) {
       string filename;
       int width, height;
 
+
       while (true) {
 
           //cout << "Enter 'w' to move up, 's' to move down, 'a' to move left, 'd' to move right, or 'q' to quit: ";
@@ -94,23 +406,32 @@ int startCampaign(CampaignEditor& campaign) {
                std::exit(EXIT_SUCCESS);
               return 0;
 
+            // new game
             case 'c':
-              cout << "Enter width: ";
-              cin >> width;
-              cout << " Enter height: ";
-              cin >> height;
+              // cout << "Enter width: ";
+              // cin >> width;
+              // cout << " Enter height: ";
+              // cin >> height;
 
-              cout <<width<<endl;
-              cout <<height<<endl;
-              //cout << width << " " << height << endl;
+              // cout <<width<<endl;
+              // cout <<height<<endl;
+              // //cout << width << " " << height << endl;
 
-              campaign.appendMap(Map(width,height));
+              // campaign.appendMap(Map(width,height));
+              campaign.appendMap(Map(20,20));
               // // Create a MapObserver instance and pass the Map reference to it
               // MapObserver observer(campaign.campaign);
               // // Add the observer to the map
               // campaign.campaign.addObserver(&observer);
 
               cout << "appending the map";
+
+
+              // spawn a bad person
+              campaign.campaign.spawnVillain();
+              campaign.campaign.spawnHero();
+
+
               //once part is finished
               startGame(campaign.campaign);
 
@@ -121,6 +442,7 @@ int startCampaign(CampaignEditor& campaign) {
               cout << "Enter a filename: ";
               cin >> filename;
               campaign.saveCampaign(filename);
+
               cout << "Campaign saved." << endl;
               break;
 
@@ -138,6 +460,11 @@ int startCampaign(CampaignEditor& campaign) {
               cin >> filename;
               Map map = campaign.loadCampaign("data/maps/" + filename);
               cout << "Campaign loaded." << endl;
+
+              // spawn a bad person
+              map.spawnVillain();
+              map.spawnHero();
+
 
               startGame(map);
               break;
@@ -158,7 +485,8 @@ int startCampaign(CampaignEditor& campaign) {
   };
 
 int main() {
-
+  std::system("clear");
+  greetingScreen();
   //
     string mapName1 = "data/maps/Asia.txt";
     string mapName2 = "data/maps/Europe.txt";
@@ -176,15 +504,6 @@ int main() {
     mapDirector.saveMap(map3, mapName2);
     mapDirector.saveMap(map2, mapName3);
 
-
-
-
-    //Map mapLoaded = mapDirector.readMapFromFile(mapName1);
-
-    // load 3 levels from thien an
-    vector<vector<int> > mapData = mapDirector.readMapFromFile(mapName1);
-
-    Map mapLoaded = Map(mapData, mapName1);
 
 
     //mapLoaded.printMap();

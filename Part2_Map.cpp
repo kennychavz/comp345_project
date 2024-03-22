@@ -4,7 +4,10 @@
 #include <iomanip>
 #include <vector>
 #include <string>
+#include <cmath>
 
+
+#include "Part1_Character.cpp"
 #include "Observable.cpp"
 
 
@@ -14,12 +17,15 @@ using std::vector;
 using std::string;
 
 /* positions
-[0] = current position
-[1] = wall
-[2] = open space
+[1] = open space
+[2] = wall
 [3] = chest
-
 */
+
+struct Position {
+  int x;
+  int y;
+};
 
 vector<string> availableNames = {"Spain", "France", "Portugal", "Denmark", "Germany", "Italy", "Greece"};
 
@@ -32,6 +38,14 @@ class Map : public Observable {
     vector<vector<int> > map;
     int currentPosX;
     int currentPosY;
+
+    // ~~~~~~~~~ Characters ~~~~~~~~
+    // villain
+    int villainX;
+    int villainY;
+    Character villain;
+    // hero
+    Character hero;
 
     // name
     string mapName;
@@ -105,7 +119,65 @@ class Map : public Observable {
         // After updating, notify all observers
         notifyObservers();
     }
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Function to choose a random point in a 2D array of given width and height
+    Position getRandomPoint() {
+      while (true) {
+        // Seed the random number generator with current time
+        srand(time(NULL));
+
+        // Generate random x and y coordinates within the range of width and height
+        int randomX = rand() % map.size();
+        int randomY = rand() % map[0].size();
+
+        // Create a Point object with the random coordinates
+        Position randomPoint = {randomX, randomY};
+
+        if (isValid(randomPoint.x, randomPoint.y) && map[randomPoint.x][randomPoint.y] == 2) {
+          continue;
+        }
+
+        return randomPoint;
+      }
+    }
+
+    // ~~~~~~~~~~~~~~~~~~~~~CHARACTERS~~~~~~~~~~~~~~~~~~~
+    void spawnVillain() {
+      // find random spot on the map
+      Position spawnPoint = getRandomPoint();
+      // put a bad person in there
+      villainX = spawnPoint.x;
+      villainY = spawnPoint.y;
+
+
+      // also create the character
+      cout << "creating the bad chracter" << endl;
+      Character fighter(5); // ex: Create a fighter with a given level
+      villain = fighter;
+      villain.displayCharacter(); // Display the initial character
+
+      CharacterObserver observer;  // Create an observer
+      villain.attachObserver(&observer);  // Attach observer to character
+    }
+    void spawnHero() {
+
+      // also create the character
+      cout << "creating the bad chracter" << endl;
+      Character fighter(5); // ex: Create a fighter with a given level
+      hero = fighter;
+      hero.displayCharacter(); // Display the initial character
+
+      CharacterObserver observer;  // Create an observer
+      hero.attachObserver(&observer);  // Attach observer to character
+    }
+
+    bool checkForEnnemies() {
+      return (
+        (currentPosX + 1 == villainX && currentPosY == villainY) ||
+        (currentPosX - 1 == villainX && currentPosY == villainY) ||
+        (currentPosY + 1 == villainY && currentPosX == villainX) ||
+        (currentPosY - 1 == villainY && currentPosX == villainX)
+      );
+    }
 
 
 
@@ -192,13 +264,40 @@ class Map : public Observable {
       }
     }
 
-    bool isValid(int x, int y, int width, int height) {
-    return x >= 0 && y >= 0 && x < width && y < height;
+    bool isValid(int x, int y) {
+    return x >= 0 && y >= 0 && x < map.size() && y < map[0].size();
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     // ~~~~~~~~~~~~~~~~Map Changes~~~~~~~~~~~~~~~~~~
+
+    // void tryMove(char character) {
+    //   int x1 = 1;
+    //   int x2 = 3;
+
+    //   int y1 = 4;
+    //   int y2 = 6;
+
+    //   // if character is good, move towards bad
+    //   if (character == 'g') {
+    //       double slope = (y2 - y1) / (x2 - x1);
+
+    //       // Round up
+    //       double roundedUp = ceil(number);
+
+    //       // Round down
+    //       double roundedDown = floor(number);
+
+    //       // move the character in the direction
+    //       switch (slope) {
+    //         case (slope < 1)
+    //       }
+
+
+    //   }
+    //   }
+    //   // if character is bad, move towards good
 
     // Function to move the character on the map
     void moveCharacter(int dx, int dy) {
@@ -212,7 +311,7 @@ class Map : public Observable {
         // cout << "new y " << newY << endl;;
 
         // Check if the new position is valid before updating
-        if (isValid(newX, newY, width, height) && isOpenPosition(newX, newY)) {
+        if (isValid(newX, newY) && isOpenPosition(newX, newY)) {
           cout << "its valid" << endl;
             currentPosX = newX;
             currentPosY = newY;
@@ -233,7 +332,7 @@ class Map : public Observable {
       int height = map.size();
 
       // Check if out of bounds (means we reached the edge)
-      if (!isValid(x, y, width, height)) return true;
+      if (!isValid(x, y)) return true;
 
       // If not "2", not part of the path
       if (map[y][x] != 1) return false;
@@ -312,11 +411,14 @@ class Map : public Observable {
       cout << "current y " << currentPosY << endl;;
     }
     void printMap() {
-      printPos();
+      //printPos();
+      std::system("clear");
       for (size_t j = 0; j < map.size(); ++j) {
           for (size_t i = 0; i < map[j].size(); ++i) {
               if (i == currentPosX && j == currentPosY) {
                   std::cout << std::setw(3) << std::setfill(' ') << "o";
+              } else if (i == villainX && j == villainY) {
+                std::cout << std::setw(3) << std::setfill(' ') << "$";
               } else if (map[i][j] == 1) {
                 std::cout << std::setw(3) << std::setfill(' ') << ".";
               } else if (map[i][j] == 2) {
