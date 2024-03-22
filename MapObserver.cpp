@@ -10,6 +10,14 @@ public:
         map.printMap();
     }
 
+void printPastPos() {
+        vector<string>& pastPos = map.getPastPositions();
+        for (string pos : pastPos) {
+            cout << pos << " " << pos << endl;
+        }
+        cout << endl;
+    }
+
 private:
     Map& map;  // Reference to the Map instance
 };
