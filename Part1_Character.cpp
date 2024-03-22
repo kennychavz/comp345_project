@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <list> // For the observer list
+//#include "CharacterStrategy.cpp"
 
 using namespace std;
 
@@ -22,15 +23,38 @@ public:
 };
 
 class Character {
-private:
+public:
     int level;
     int abilityScores[6]; // STR, DEX, CON, INT, WIS, CHA
     int abilityModifiers[6];
     int hitPoints;
+    int remainingHitPoints;
     int armorClass;
     int attackBonus;
     int damageBonus;
     Item *equipment[6]; // Armor, Shield, Weapon, Boots, Ring, Helmet
+
+    // CharacterActionsStrategy* actionsStrategy;
+    // Character(CharacterActionsStrategy* strategy) : actionsStrategy(strategy) {}
+    // void performActions() {
+    //     actionsStrategy->move();
+    //     actionsStrategy->attack();
+    //     actionsStrategy->freeActions();
+    // }
+
+    bool takeAttack(int attackDmg) {
+      cout << "receiving attack" << endl;
+      if (remainingHitPoints - attackDmg < 1) {
+        remainingHitPoints = 0;
+        cout << "Fatal Blow" << endl;
+        return 1;
+      }
+      else {
+        cout << attackDmg << " ATTACK" << endl;
+        remainingHitPoints -= attackDmg;
+        return 0;
+      }
+    }
 
     void generateAbilityScores()
     {
@@ -46,6 +70,7 @@ private:
     {
         int baseHP = 10; // Base HP for fighter class
         hitPoints = baseHP + (abilityModifiers[2] * level); // CON modifier
+        remainingHitPoints = hitPoints;
     }
 
     void calculateArmorClass()
@@ -63,7 +88,7 @@ private:
     }
     list<ICharacterObserver*> observers; // List to store observers
 
-public:
+    Character () {}
     Character(int level) : level(level)
     {
         srand((unsigned)time(0)); // To seed the random number generator used by rand().
@@ -105,6 +130,7 @@ public:
                 case 0: // Armor slot
                     // Armor increases hit points
                     hitPoints += item->bonus;
+                    remainingHitPoints += item->bonus;
                     break;
                 case 1: // Shield slot
                     // Shields increase armor class
@@ -149,6 +175,14 @@ public:
         cout << "Attack Bonus: " << attackBonus << endl;
         cout << "Damage Bonus: " << damageBonus << endl;
     }
+    void displayHitPoints() {
+      cout << "\Level: " << level << endl;
+      cout << "Hit Points: " << hitPoints << endl;
+      cout << "Remaining Hit Points: " << remainingHitPoints << endl;
+      cout << "Armor Class: " << armorClass << endl;
+      cout << "Attack Bonus: " << attackBonus << endl;
+      cout << "Damage Bonus: " << damageBonus << endl;
+    }
 
     std::vector<int> getAbilityScores() const {
         return std::vector<int>(abilityScores, abilityScores + 6);
@@ -177,79 +211,79 @@ public:
     }
 };
 
-//Character Testing Method
-void testCharacter() {
-    Character testSubjectCharacter(20);
-    auto scores = testSubjectCharacter.getAbilityScores();
+// //Character Testing Method
+// void testCharacter() {
+//     Character testSubjectCharacter(20);
+//     auto scores = testSubjectCharacter.getAbilityScores();
 
-    // Test 1: To check if the Ability Scores are within the expected range
-    bool abilityScoreTestPassed = true;
-    for (int score : scores) {
-        if (score < 3 || score > 18) {
-            abilityScoreTestPassed = false;
-            break;
-        }
-    }
-    cout << (abilityScoreTestPassed ? "Test 1: Ability score range test passed." : "Test 1: Ability score range test failed.") << endl;
+//     // Test 1: To check if the Ability Scores are within the expected range
+//     bool abilityScoreTestPassed = true;
+//     for (int score : scores) {
+//         if (score < 3 || score > 18) {
+//             abilityScoreTestPassed = false;
+//             break;
+//         }
+//     }
+//     cout << (abilityScoreTestPassed ? "Test 1: Ability score range test passed." : "Test 1: Ability score range test failed.") << endl;
 
-    // Initial values to compare
-    int initialHitPoints = testSubjectCharacter.getHitPoints();
-    int initialArmorClass = testSubjectCharacter.getArmorClass();
-    int initialAttackBonus = testSubjectCharacter.getAttackBonus();
+//     // Initial values to compare
+//     int initialHitPoints = testSubjectCharacter.getHitPoints();
+//     int initialArmorClass = testSubjectCharacter.getArmorClass();
+//     int initialAttackBonus = testSubjectCharacter.getAttackBonus();
 
-    // Test 2: To check if item equipments properly change the stats
-    Item sword("Sword", 5); // Sword should add 5 to the attack bonus
-    testSubjectCharacter.equipItem(&sword, 2); // Equip sword in weapon slot
+//     // Test 2: To check if item equipments properly change the stats
+//     Item sword("Sword", 5); // Sword should add 5 to the attack bonus
+//     testSubjectCharacter.equipItem(&sword, 2); // Equip sword in weapon slot
 
-    Item armor("Armor", 10); // This armor should add 10 to hit points
-    testSubjectCharacter.equipItem(&armor, 0); // Equip armor in armor slot
+//     Item armor("Armor", 10); // This armor should add 10 to hit points
+//     testSubjectCharacter.equipItem(&armor, 0); // Equip armor in armor slot
 
-    Item shield("Shield", 3); // This shield should 3 to armor class
-    testSubjectCharacter.equipItem(&shield, 1); // Equip shield in shield slot
+//     Item shield("Shield", 3); // This shield should 3 to armor class
+//     testSubjectCharacter.equipItem(&shield, 1); // Equip shield in shield slot
 
-    bool equipmentTestPassed = true;
-    if (testSubjectCharacter.getHitPoints() != initialHitPoints + armor.bonus) {
-        cout << "Hit points did not increase correctly after equipping armor." << endl;
-        equipmentTestPassed = false;
-    }
-    if (testSubjectCharacter.getArmorClass() != initialArmorClass + shield.bonus) {
-        cout << "Armor class did not increase correctly after equipping shield." << endl;
-        equipmentTestPassed = false;
-    }
-    if (testSubjectCharacter.getAttackBonus() != initialAttackBonus + sword.bonus) {
-        cout << "Attack bonus did not increase correctly after equipping sword." << endl;
-        equipmentTestPassed = false;
-    }
+//     bool equipmentTestPassed = true;
+//     if (testSubjectCharacter.getHitPoints() != initialHitPoints + armor.bonus) {
+//         cout << "Hit points did not increase correctly after equipping armor." << endl;
+//         equipmentTestPassed = false;
+//     }
+//     if (testSubjectCharacter.getArmorClass() != initialArmorClass + shield.bonus) {
+//         cout << "Armor class did not increase correctly after equipping shield." << endl;
+//         equipmentTestPassed = false;
+//     }
+//     if (testSubjectCharacter.getAttackBonus() != initialAttackBonus + sword.bonus) {
+//         cout << "Attack bonus did not increase correctly after equipping sword." << endl;
+//         equipmentTestPassed = false;
+//     }
 
-    cout << (equipmentTestPassed ? "Test 2: Equipment stat modification tests passed." : "Test 2: Equipment stat modification tests failed.") << endl;
-}
+//     cout << (equipmentTestPassed ? "Test 2: Equipment stat modification tests passed." : "Test 2: Equipment stat modification tests failed.") << endl;
+// }
 
-// Observer Pattern Testing
-void testObserverPattern() {
-    Character myCharacter(5);
-    CharacterObserver observer1;
-    CharacterObserver observer2;
+// // Observer Pattern Testing
+// void testObserverPattern() {
+//     Character myCharacter(5);
+//     CharacterObserver observer1;
+//     CharacterObserver observer2;
 
-    // Test 1: Attaching Multiple Observers
-    myCharacter.attachObserver(&observer1);
-    myCharacter.attachObserver(&observer2);
-    std::cout << "\nTwo observers attached. Equipping item (should update BOTH)...\n";
-    myCharacter.equipItem(new Item("Iron Armor", 5), 0);
-    // Replace visual inspection with checks for both observer1 and observer2
+//     // Test 1: Attaching Multiple Observers
+//     myCharacter.attachObserver(&observer1);
+//     myCharacter.attachObserver(&observer2);
+//     std::cout << "\nTwo observers attached. Equipping item (should update BOTH)...\n";
+//     myCharacter.equipItem(new Item("Iron Armor", 5), 0);
+//     // Replace visual inspection with checks for both observer1 and observer2
 
-    // Test 2: Detaching One Observer
-    myCharacter.detachObserver(&observer1);
-    std::cout << "\nObserver 1 detached. Equipping item (should update ONLY observer2)...\n";
-    myCharacter.equipItem(new Item("Helmet", 1), 5);
-    // Replace visual inspection with checks for observer1 (no update) and observer 2
+//     // Test 2: Detaching One Observer
+//     myCharacter.detachObserver(&observer1);
+//     std::cout << "\nObserver 1 detached. Equipping item (should update ONLY observer2)...\n";
+//     myCharacter.equipItem(new Item("Helmet", 1), 5);
+//     // Replace visual inspection with checks for observer1 (no update) and observer 2
 
-}
+// }
 
 // // Driver class
 // int main() {
 //     cout << "\nRunning tests...\n\n";
-//     testCharacter();
-//     testObserverPattern();
+//     // testCharacter();
+//     // testObserverPattern();
 
 //     cout << "\n>>>>>>>>>>>>>>>>>>> Character Creation <<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n";
 
