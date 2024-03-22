@@ -110,6 +110,8 @@ class Map : public Observable {
             observer->update();
         }
     }
+
+    vector<string> positions;
     void updateMap() {
       cout << "inside of update"<<endl;
       cout << "new posX" << currentPosX<<endl;
@@ -117,8 +119,15 @@ class Map : public Observable {
         // Update map logic goes here...
 
         // After updating, notify all observers
+        positions.push_back("x: " + currentPosX);
+        positions.push_back("y: " + currentPosY);
         notifyObservers();
     }
+
+  vector<string>& getPastPositions() {
+          return positions;
+      }
+
     // Function to choose a random point in a 2D array of given width and height
     Position getRandomPoint() {
       while (true) {
