@@ -27,7 +27,6 @@ public:
 class Character {
 private:
     int level;
-    int hitPoints;
     int armorClass;
     int attackBonus;
     int damageBonus;
@@ -54,6 +53,7 @@ public:
     int abilityModifiers[6];
     string type;
     string skill_description;
+    int hitPoints;
     int remainingHitPoints;
 
     Character(int level);
