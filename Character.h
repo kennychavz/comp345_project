@@ -82,6 +82,8 @@ public:
 
     void updateAttacksPerRound();
 
+    bool takeAttack(int heroDmg);
+
     void levelUp();
 
 };
