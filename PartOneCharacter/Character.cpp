@@ -17,6 +17,7 @@ Character::Character(int level) : level(level)
     // Assuming the character creation has at least 1 minute interval.
     generateAbilityScores();
     calculateHitPoints();
+    remainingHitPoints = hitPoints;
     calculateArmorClass();
     calculateAttackBonus();
     calculateDamageBonus();
@@ -184,6 +185,18 @@ void Character::updateAttackBonus() {
 
 void Character::updateAttacksPerRound() {
     attacksPerRound = 1 + level / 5; // 1 attack at initial levels, +1 every 5 levels
+}
+
+bool Character::takeAttack(int heroDmg){
+    if (remainingHitPoints > heroDmg) {
+        remainingHitPoints -= heroDmg;
+        return true;
+    }
+    else {
+        remainingHitPoints = 0;
+        return false;
+        cout << "\nDEBUG: Character Died!" << endl;
+    }
 }
 
 void Character::levelUp() {
