@@ -1,14 +1,13 @@
 #ifndef CHARA_BUILD
 #define CHARA_BUILD
 
-
-#include <iostream>
 #include <string>
 #include <vector>
 #include <list> // For the observer list
 
 using namespace std;
 
+class CharacterBuilder; //Forward Declaration
 class Character;
 
 // observer interface
@@ -28,12 +27,12 @@ public:
 class Character {
 private:
     int level;
-    int abilityScores[6]; // STR, DEX, CON, INT, WIS, CHA
-    int abilityModifiers[6];
     int hitPoints;
     int armorClass;
     int attackBonus;
     int damageBonus;
+    int attacksPerRound;
+
     Item *equipment[6]; // Armor, Shield, Weapon, Boots, Ring, Helmet
 
     void generateAbilityScores();
@@ -46,10 +45,19 @@ private:
 
     void calculateDamageBonus();
 
+    int rollDice();
+
     list<ICharacterObserver*> observers; // List to store observers
 
 public:
+    int abilityScores[6]; // STR, CON, DEX, INT, CHA, WIS
+    int abilityModifiers[6];
+    string type;
+    string skill_description;
+
     Character(int level);
+
+    void setBuilder(CharacterBuilder* builder);
 
     void attachObserver(ICharacterObserver *observer);
 
@@ -68,6 +76,12 @@ public:
     int getArmorClass();
 
     int getAttackBonus();
+
+    void updateAttackBonus();
+
+    void updateAttacksPerRound();
+
+    void levelUp();
 
 };
 

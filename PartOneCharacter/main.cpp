@@ -1,4 +1,5 @@
 #include "Character.h"
+#include "CharacterBuilder.h"
 #include "Tests.h"
 #include <iostream>
 
@@ -34,6 +35,17 @@ int main() {
     Item shield("Steele Shield", 1);
     fighter.equipItem(&shield, 1); // ex: Equip steele shield in shield slot
     cout << "\nSteele Shield equipped with a Armor Bonus of 1.\n";
+
+
+    BullyBuilder bullyBuilder;
+    Character* myBully = new Character(1);
+    myBully->setBuilder(&bullyBuilder);
+
+    myBully->displayCharacter();
+
+    myBully->levelUp();
+
+    myBully->displayCharacter();
 
     return 0;
 }

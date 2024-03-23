@@ -1,8 +1,7 @@
 #include "Character.h"
+#include "CharacterBuilder.h"
 #include <iostream>
-#include <string>
-#include <vector>
-#include <list> // For the observer list
+
 
 using namespace std;
 
@@ -11,6 +10,8 @@ Item::Item(string name, int bonus) : name(name), bonus(bonus) {}
 
 Character::Character(int level) : level(level)
 {
+    type = "Fighter";
+    skill_description = "Base Fighter";
     srand((unsigned)time(0)); // To seed the random number generator used by rand().
     // To ensure the random number generator is seeded with a unique value based on current time.
     // Assuming the character creation has at least 1 minute interval.
@@ -25,11 +26,15 @@ Character::Character(int level) : level(level)
     }
 }
 
+void Character::setBuilder(CharacterBuilder* builder) {
+    builder->build(this);
+}
+
 void Character::generateAbilityScores()
 {
     for (int i = 0; i < 6; i++)
     {
-        abilityScores[i] = rand() % 16 + 3; // Roll 3d6. i.e. Rolling three six-sided dices and sum the result.
+        abilityScores[i] = rollDice(); // Roll 4d6 and sum the MAX 3/4 dice values.
         abilityModifiers[i] = (abilityScores[i] - 10) / 2; // Score of 10 gives a +0 modifier,
         // and each even number above/below adjusts the modifier by 1 accordingly.
     }
@@ -38,7 +43,7 @@ void Character::generateAbilityScores()
 void Character::calculateHitPoints()
 {
     int baseHP = 10; // Base HP for fighter class
-    hitPoints = baseHP + (abilityModifiers[2] * level); // CON modifier
+    hitPoints = baseHP + (abilityModifiers[1] * level); // CON modifier
 }
 
 void Character::calculateArmorClass()
@@ -54,6 +59,30 @@ void Character::calculateAttackBonus()
 void Character::calculateDamageBonus() {
     damageBonus = abilityModifiers[0]; // STR modifier
 }
+
+int Character::rollDice() {
+    int sumResult = 0;
+    int diceValues[4];
+    for (int i = 0; i < 4; i++) {
+        diceValues[i] = rand() % 6 + 1;
+    }
+    int lowest = 6;
+    int lowestIndex;
+    for (int i = 0; i < 4; i++) {
+        if (diceValues[i] < lowest) {
+            lowest = diceValues[i];
+            lowestIndex = i;
+        }
+    }
+    for (int i = 0; i < 4; i++) {
+        if (i == lowestIndex) continue;
+        else
+            sumResult += diceValues[i];
+    }
+
+    return sumResult;
+}
+
 
 //------------- Observer Management -----------------
 
@@ -93,11 +122,11 @@ void Character::equipItem(Item *item, int slot) {
                 break;
             case 3: // Boots slot
                 // Boots increase DEX
-                abilityScores[1] += item->bonus;
+                abilityScores[2] += item->bonus;
                 break;
             case 4: // Ring slot
                 // Rings can increase CONST
-                abilityScores[2] += item->bonus;
+                abilityScores[1] += item->bonus;
                 break;
             case 5: // Helmet slot
                 // Helmets increase armor class
@@ -113,9 +142,11 @@ void Character::equipItem(Item *item, int slot) {
 
 void Character::displayCharacter()
 {
-    cout << "\nLevel: " << level << endl;
-    cout << "Ability Scores and Modifiers: " << endl;
-    string abilities[6] = {"STR (Strength)", "DEX (Dexterity)", "CON (Constitution)",
+    cout << "\nType: " << type << endl;
+    cout << "Skill: " << skill_description << endl;
+    cout << "Level: " << level << endl;
+    cout << "\nAbility Scores and Modifiers: " << endl;
+    string abilities[6] = {"STR (Strength)", "CON (Constitution)", "DEX (Dexterity)",
                             "INT (Intelligence)", "WIS (Wisdom)", "CHA (Charisma)"};
     for (int i = 0; i < 6; i++)
     {
@@ -142,6 +173,24 @@ int Character::getArmorClass(){
 int Character::getAttackBonus(){
     return attackBonus;
 }
+
+void Character::updateAttackBonus() {
+    attackBonus = level / 5; // +1 attack bonus every 5 levels
+}
+
+void Character::updateAttacksPerRound() {
+    attacksPerRound = 1 + level / 5; // 1 attack at initial levels, +1 every 5 levels
+}
+
+void Character::levelUp() {
+    level++;
+    calculateHitPoints();
+    updateAttackBonus();
+    updateAttacksPerRound();
+
+    notifyObservers();
+}
+
 
 void CharacterObserver::onCharacterUpdate(Character *character) {
     // Re-display character view
