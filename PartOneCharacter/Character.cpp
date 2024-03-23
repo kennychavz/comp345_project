@@ -155,6 +155,7 @@ void Character::displayCharacter()
     cout << "Hit Points: " << hitPoints << endl;
     cout << "Armor Class: " << armorClass << endl;
     cout << "Attack Bonus: " << attackBonus << endl;
+    cout << "Attack Per Rounds: " << attacksPerRound << endl;
     cout << "Damage Bonus: " << damageBonus << endl;
 }
 
@@ -175,7 +176,7 @@ int Character::getAttackBonus(){
 }
 
 void Character::updateAttackBonus() {
-    attackBonus = level / 5; // +1 attack bonus every 5 levels
+    attackBonus++; // +1 attack bonus every level
 }
 
 void Character::updateAttacksPerRound() {
