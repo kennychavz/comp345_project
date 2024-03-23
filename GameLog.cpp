@@ -42,10 +42,10 @@ private:
     DiceObserver diceObserver;
 
     bool loggingEnabled;
-    bool controllerLogging;
-    bool mapLogging;
-    bool charLogging;
-    bool diceLogging;
+    // bool controllerLogging;
+    // bool mapLogging;
+    // bool charLogging;
+    // bool diceLogging;
 
     vector<string> logs;
 
@@ -58,21 +58,21 @@ public:
         loggingEnabled = enabled;
     }
 
-    void setControllerLogging(bool enabled) {
-        controllerLogging = enabled;
-    }
+    // void setControllerLogging(bool enabled) {
+    //     controllerLogging = enabled;
+    // }
 
-    void setMapLogging(bool enabled) {
-        mapLogging = enabled;
-    }
+    // void setMapLogging(bool enabled) {
+    //     mapLogging = enabled;
+    // }
 
-    void setCharLogging(bool enabled) {
-        charLogging = enabled;
-    }
+    // void setCharLogging(bool enabled) {
+    //     charLogging = enabled;
+    // }
 
-    void setDiceLogging(bool enabled) {
-        diceLogging = enabled;
-    }
+    // void setDiceLogging(bool enabled) {
+    //     diceLogging = enabled;
+    // }
     void addObserver(Observer* observer) {
         observers.push_back(observer);
     }
@@ -96,99 +96,99 @@ public:
 
         cout << "/n******************** GAME LOG **************************/n" << endl;
 
-         if (controllerLogging == true) {
+         //if (controllerLogging == true) {
             gameController.setUp();
             cout << "Maps saved: " << endl; 
             //return campaign names
-        }
+        //}
 
-        if (mapLogging == true) { 
+        //if (mapLogging == true) { 
             cout << "Previous positions: " << endl;
             mapObserver.printPastPos(); 
-        }
+        //}
 
-        if (charLogging == true) {
+        //if (charLogging == true) {
             cout << "Attack record: " << endl;
-            charObserver.onCharacterUpdate();
-        }
+            //charObserver.onCharacterUpdate();
+        //}
 
-        if (diceLogging == true ) {
+        //if (diceLogging == true ) {
             cout << "Dice roll record: " << endl;
             diceObserver.update();
-        }
+        //}
 
         cout << "/n*******************************************************/n" << endl;
     }
 };
 
-int main() {
+// int main() {
     
-    char input;
-    int choice;
-    Map map;
-    Dice dice;
+//     char input;
+//     int choice;
+//     Map map;
+//     Dice dice;
 
-    GameController gameController;
-    MapObserver mapObserver(map);
-    CharacterObserver charObserver;
-    DiceObserver diceObserver(dice);
+//     GameController gameController;
+//     MapObserver mapObserver(map);
+//     CharacterObserver charObserver;
+//     DiceObserver diceObserver(dice);
 
-    GameLog gameLog = GameLog(gameController, mapObserver, charObserver, diceObserver);
-    gameLog.addObserver(&gameController);
-    gameLog.addObserver(&mapObserver);
-    //gameLog.addObserver(&charObserver);
-    //gameLog.addObserver(&diceObserver);
+//     GameLog gameLog = GameLog(gameController, mapObserver, charObserver, diceObserver);
+//     gameLog.addObserver(&gameController);
+//     gameLog.addObserver(&mapObserver);
+//     //gameLog.addObserver(&charObserver);
+//     //gameLog.addObserver(&diceObserver);
 
 
-    bool validInput = false;
+//     bool validInput = false;
 
-    while (!validInput) {
-        cout << "Do you want to record this game? (y/n): ";
-        cin >> input;
+//     while (!validInput) {
+//         cout << "Do you want to record this game? (y/n): ";
+//         cin >> input;
 
-        switch (input) {
+//         switch (input) {
 
-            case 'y':
-                gameLog.setLogging(true);
-                validInput = true;
-                //gameLog.printLog();
-                cout << "What would you like to log?" << endl << "(1) Maps" << endl << "(2) Character moves" << endl << "(3) Character attacks"
-                    << endl << "(4) Dice rolls" << endl << "(5) All of the above" << endl;
-                cin >> choice;
-                switch (choice) {
-                case 1:
-                    gameLog.setControllerLogging(true);
-                    break;
-                case 2:
-                    gameLog.setMapLogging(true);
-                    break;
-                case 3:
-                    gameLog.setCharLogging(true);
-                    break;
-                case 4:
-                    gameLog.setDiceLogging(true);
-                    break;
-                case 5: 
-                    gameLog.setCharLogging(true);
-                    gameLog.setCharLogging(true);
-                    gameLog.setMapLogging(true);
-                    gameLog.setDiceLogging(true);
-                default:
-                    break;
-                }
+//             case 'y':
+//                 gameLog.setLogging(true);
+//                 validInput = true;
+//                 //gameLog.printLog();
+//                 cout << "What would you like to log?" << endl << "(1) Maps" << endl << "(2) Character moves" << endl << "(3) Character attacks"
+//                     << endl << "(4) Dice rolls" << endl << "(5) All of the above" << endl;
+//                 cin >> choice;
+//                 // switch (choice) {
+//                 // case 1:
+//                 //     gameLog.setControllerLogging(true);
+//                 //     break;
+//                 // case 2:
+//                 //     gameLog.setMapLogging(true);
+//                 //     break;
+//                 // case 3:
+//                 //     gameLog.setCharLogging(true);
+//                 //     break;
+//                 // case 4:
+//                 //     gameLog.setDiceLogging(true);
+//                 //     break;
+//                 // case 5: 
+//                 //     gameLog.setCharLogging(true);
+//                 //     gameLog.setCharLogging(true);
+//                 //     gameLog.setMapLogging(true);
+//                 //     gameLog.setDiceLogging(true);
+//                 // default:
+//                 //     break;
+//                 // }
                 
-                gameLog.printLog();
-                break;
+//                 gameLog.printLog();
+//                 break;
 
-            case 'n':
-                gameLog.setLogging(false);
-                validInput = true;
-                break;
-            default: 
-                cout << "Invalid input. Please try again." << endl;
-        }
-    }
+//             case 'n':
+//                 gameLog.setLogging(false);
+//                 validInput = true;
+//                 break;
+//             default: 
+//                 cout << "Invalid input. Please try again." << endl;
+//         }
+//     }
 
 
 
-};
+// };

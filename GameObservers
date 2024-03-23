@@ -1,0 +1,12 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include "Observable.cpp"
+
+class GameLog : Observer {
+
+    void update() {
+
+    }
+
+};

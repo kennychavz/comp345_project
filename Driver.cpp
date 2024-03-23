@@ -1,11 +1,13 @@
 
 #include <iostream>
-#include "Part2_Map.cpp"  // Include Map class file
+#include "Part2_Map.cpp" 
+//#include "Part4_Dice.cpp" // Include Map class file
 #include "MapObserver.cpp"  // Include MapObserver class file
 //#include "Part4_MapBuilder.cpp"
 #include "A2_Part3_CampaignEditor.cpp"
 //#include "Part1_Character.cpp"
 #include "Part4_MapBuilder.cpp"
+//#include "GameLog.cpp"
 #include <cstdlib>
 #include <filesystem>
 #include <thread>
@@ -31,6 +33,40 @@ vector<string> getFilenames() {
     }
 
     return filenames;
+}
+
+void setUp () {
+        time_t currentTime = time(nullptr);
+        char* timeString = ctime(&currentTime);
+    // Print out the current date and time
+        cout << "This game was played at: " << timeString << endl;
+    }
+
+void printLog() {
+        Map map;
+        MapObserver mapObserver(map);
+        cout << "\n*********************************** GAME LOG *****************************************\n" << endl;
+         //if (controllerLogging == true) {
+            setUp();
+            cout << "Maps saved: " << endl; 
+            
+        //}
+        //if (mapLogging == true) { 
+            cout << "Previous positions: " << endl;
+             
+        //}
+
+        //if (charLogging == true) {
+            cout << "Attack record: " << endl;
+            //charObserver.onCharacterUpdate();
+        //}
+        // //if (diceLogging == true ) {
+        //     cout << "Dice roll record: " << endl;
+        //     diceObserver.update();
+        // //}
+
+        cout << "\n***************************************************************************************\n" << endl;
+    
 }
 
 void greetingScreen() {
@@ -235,6 +271,9 @@ void printBattleScene(Character& hero, Character& villain) {
 
 }
 
+
+vector <string> attackRecord;
+
 void battle(Character& hero, Character& villain) {
     printBattleScene(hero, villain);
   while (true) {
@@ -246,9 +285,12 @@ void battle(Character& hero, Character& villain) {
     cin >> choice; // Read user input into 'choice'
 
     // vars
+    string vstring, hstring;
+    int i, j;
     bool res;
     int heroDmg = hero.getAttackBonus() * 0.4;
     int villainDmg = villain.getAttackBonus() * 0.4;
+
 
     switch (choice) {
 
@@ -256,20 +298,26 @@ void battle(Character& hero, Character& villain) {
         // attack
         res = villain.takeAttack(heroDmg);
         printBattleScene(hero, villain);
-
+        hstring = "Villain Damage = " + std::to_string(i);
+        attackRecord.push_back(hstring);
 
         if (res) {
+            
+            attackRecord.push_back("Villain Defeated");
             fatalScreen();
              congratulationsScreen();
 
              // call the logs
               return;
           } else {
+            
             attackScreen(heroDmg);
+            i += heroDmg;
             //cout << "\tVillain:" << endl;
             //villain.displayHitPoints();
             break;
           }
+    
           break;
 
       case 'd':
@@ -277,18 +325,23 @@ void battle(Character& hero, Character& villain) {
         res = hero.takeAttack(villainDmg);
         printBattleScene(hero, villain);
         defenseScreen(villainDmg);
+        vstring = "Hero Damage = " + std::to_string(j);
+        attackRecord.push_back(vstring);
 
         if (res) {
+              attackRecord.push_back("YOU DIED");
               fatalScreen();
              defeatScreen();
 
              // call the logs
               return;
           } else {
+            j += villainDmg;
             //cout << "\tVillain:" << endl;
             //villain.displayHitPoints();
             break;
           }
+           
           break;
         break;
 
@@ -307,9 +360,17 @@ void battle(Character& hero, Character& villain) {
         //   break;
         break;
       }
+
   }
 
 }
+
+void printAttackRecord() {
+        for (string attack : attackRecord) {
+        std::cout << attack << endl;
+    }
+    std::cout << std::endl;
+    }
 
 void chooseStrategy(Character& hero, Character& villain) {
   // print battle scene
@@ -327,7 +388,11 @@ void chooseStrategy(Character& hero, Character& villain) {
       break;
     }
 
+    
+
 }
+
+
 
 void startGame(Map& map) {
   char choice;
@@ -381,17 +446,15 @@ int startCampaign(CampaignEditor& campaign) {
 
       // give inputs to user
       char choice;
-      char choice1;
-      char choice2;
+      char recordChoice;
       char input;
       string filename;
       int width, height;
 
-
       while (true) {
 
           //cout << "Enter 'w' to move up, 's' to move down, 'a' to move left, 'd' to move right, or 'q' to quit: ";
-          cout <<"Enter a hotkey [q]uit, [c]reate new map,[s]ave, l[o]ad, [m]odify";
+          cout <<"Enter a hotkey [q]uit, [c]reate new map, [s]ave, l[o]ad, [m]odify: ";
 
           // Clear the input buffer
           cin >> choice; // Read user input into 'choice'
@@ -402,10 +465,28 @@ int startCampaign(CampaignEditor& campaign) {
 
             case 'q':
               // Quit the program
-              cout << "1";
-               std::exit(EXIT_SUCCESS);
-              return 0;
+              //cout << "1";
+              char recordChoice;
+              cout << "Do you want to record the game? (y/n): ";
+              cin >> recordChoice;
 
+              if (recordChoice == 'y') {
+                  cout << "\n*********************************** GAME LOG *****************************************\n" << endl;
+                  setUp();
+
+                  cout << "Previous positions: " << endl;
+                  campaign.printPastPos();
+
+                  cout << "Attack record: "<< endl;
+                  printAttackRecord();
+
+                  cout << "Maps saved: " << endl; 
+                  printMapLoaded();
+              }
+
+              std::cout << "Thank you for playing!" << std::endl;
+              std::exit(EXIT_SUCCESS);
+              return 0;
             // new game
             case 'c':
               // cout << "Enter width: ";
@@ -417,7 +498,11 @@ int startCampaign(CampaignEditor& campaign) {
               // cout <<height<<endl;
               // //cout << width << " " << height << endl;
 
-              // campaign.appendMap(Map(width,height));
+              //campaign.appendMap(Map(width,height));
+              
+              cout << "Do you want to record the game? (y/n): ";
+              cin >> recordChoice;
+
               campaign.appendMap(Map(20,20));
               // // Create a MapObserver instance and pass the Map reference to it
               // MapObserver observer(campaign.campaign);

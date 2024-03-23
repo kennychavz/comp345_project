@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
-#include "Part4_Dice.h"
+//#include "Part4_Dice.h"
 #include "Observable.cpp"
 using namespace std;
 
@@ -120,15 +120,15 @@ public:
         cout << endl;
     }
 
-    // void printDiceLog () {
+    void printDiceLog () {
 
-    //     vector<int>& pastResults = dice.getPastResults();
-    //     cout << "Past dice roll results: " << endl;
-    //     for (int result : pastResults) {
-    //         cout << result << endl;
-    //     }
-    //     cout << endl;
-    // }
+        vector<int>& pastResults = dice.getPastResults();
+        cout << "Past dice roll results: " << endl;
+        for (int result : pastResults) {
+            cout << result << endl;
+        }
+        cout << endl;
+    }
 
 private:
     Dice& dice;

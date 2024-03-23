@@ -119,8 +119,6 @@ class Map : public Observable {
         // Update map logic goes here...
 
         // After updating, notify all observers
-        positions.push_back("x: " + currentPosX);
-        positions.push_back("y: " + currentPosY);
         notifyObservers();
     }
 
@@ -321,6 +319,8 @@ class Map : public Observable {
 
         // Check if the new position is valid before updating
         if (isValid(newX, newY) && isOpenPosition(newX, newY)) {
+              positions.push_back("(" + to_string(currentPosX) + ", " + to_string(currentPosY) + ")");
+
           cout << "its valid" << endl;
             currentPosX = newX;
             currentPosY = newY;

@@ -12,6 +12,7 @@ using std::ofstream;
 using std::string;
 using std::vector;
 
+vector <string> mapLoaded;
 void saveMap(Map map, string& filename) {
     cout<< "inside of save map"<< endl;
     cout << "filename" << filename<< endl;
@@ -28,6 +29,7 @@ void saveMap(Map map, string& filename) {
             file << endl;
         }
         file.close();
+        mapLoaded.push_back(filename);
 
     } else {
         cout << "Unable to open file." << endl;
@@ -74,8 +76,16 @@ Map readMapFromFile(const string& filename) {
     // turn to map
     Map mapConverted = Map(map, filename);
 
-
+    mapLoaded.push_back(filename);
     return mapConverted;
+
+}
+
+void printMapLoaded() {
+    for (string name : mapLoaded) {
+            cout << name << endl;
+        }
+        cout << endl;
 
 }
 
@@ -87,6 +97,14 @@ public:
     Map campaign;
 
     CampaignEditor() : campaign() {}
+
+    void printPastPos() {
+        vector<string>& pastPos = campaign.getPastPositions();
+        for (string pos : pastPos) {
+            cout << pos << endl;
+        }
+        cout << endl;
+    }
 
     void appendMap(Map map)
     {
