@@ -5,7 +5,7 @@
 #include "MapObserver.cpp"  // Include MapObserver class file
 //#include "Part4_MapBuilder.cpp"
 #include "A2_Part3_CampaignEditor.cpp"
-//#include "Part1_Character.cpp"
+#include "Character.h"
 #include "Part4_MapBuilder.cpp"
 //#include "GameLog.cpp"
 #include <cstdlib>
