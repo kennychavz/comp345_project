@@ -6,7 +6,38 @@
 using namespace std;
 
 
-Item::Item(string name, int bonus) : name(name), bonus(bonus) {}
+//Item::Item(string name, int bonus) : name(name), bonus(bonus) {}
+
+class ItemContainer
+{
+    std::vector<Item *> items;
+
+public:
+    ~ItemContainer()
+    {
+        for (Item *item : items)
+        {
+            delete item;
+        }
+    }
+
+    void addItem(Item *item)
+    {
+        items.push_back(item);
+    }
+
+    Item *getItem(const std::string &name)
+    {
+        for (Item *item : items)
+        {
+            if (item->getName() == name)
+            {
+                return item;
+            }
+        }
+        return NULL;
+    }
+};
 
 Character::Character(int level) : level(level)
 {
@@ -21,6 +52,7 @@ Character::Character(int level) : level(level)
     calculateArmorClass();
     calculateAttackBonus();
     calculateDamageBonus();
+    ItemContainer backpack;
     for (int i = 0; i < 6; i++)
     {
         equipment[i] = nullptr; // Initialize empty equipment slots.
@@ -104,7 +136,7 @@ void Character::notifyObservers() {
 
 //------------- Character Modification/Display -----------------
 
-void Character::equipItem(Item *item, int slot) {
+void Character::equipItem(Equipment *item, int slot) {
     if (slot >= 0 && slot < 6)
     {
         equipment[slot] = item;
@@ -114,27 +146,27 @@ void Character::equipItem(Item *item, int slot) {
         switch (slot) {
             case 0: // Armor slot
                 // Armor increases hit points
-                hitPoints += item->bonus;
+                hitPoints += item->getEnchantmentBonus();
                 break;
             case 1: // Shield slot
                 // Shields increase armor class
-                armorClass += item->bonus;
+                armorClass += item->getEnchantmentBonus();
                 break;
             case 2: // Weapon slot
                 // Weapons increase attack bonus
-                attackBonus += item->bonus;
+                attackBonus += item->getEnchantmentBonus();
                 break;
             case 3: // Boots slot
                 // Boots increase DEX
-                abilityScores[2] += item->bonus;
+                abilityScores[2] += item->getEnchantmentBonus();
                 break;
             case 4: // Ring slot
                 // Rings can increase CONST
-                abilityScores[1] += item->bonus;
+                abilityScores[1] += item->getEnchantmentBonus();
                 break;
             case 5: // Helmet slot
                 // Helmets increase armor class
-                armorClass += item->bonus;
+                armorClass += item->getEnchantmentBonus();
                 break;
             default:
                 // If somehow an invalid slot is passed, do nothing
@@ -144,6 +176,20 @@ void Character::equipItem(Item *item, int slot) {
     }
 }
 
+void Character::use(UsableItem *item) {
+    if (item->getName() == "Healing Potion") {
+        int healAmount = item->getEnchantmentBonus();
+        remainingHitPoints = std::min(remainingHitPoints + healAmount, hitPoints);
+        std::cout << "Used Healing Potion! Healed for " << healAmount << " HP." << std::endl;
+    } else if(item->getName() == "Potion of Strength") {
+        damageBonus += item->getEnchantmentBonus();
+        std::cout << "Used Potion of Strength! Damage bonus increased by " << item->getEnchantmentBonus() << std::endl;
+    } else {
+        std::cout << "Unknown usable item!" << std::endl;
+    }
+    notifyObservers();
+}
+
 void Character::displayCharacter()
 {
     cout << "\nType: " << type << endl;
@@ -151,7 +197,7 @@ void Character::displayCharacter()
     cout << "Level: " << level << endl;
     cout << "\nAbility Scores and Modifiers: " << endl;
     string abilities[6] = {"STR (Strength)", "CON (Constitution)", "DEX (Dexterity)",
-                            "INT (Intelligence)", "WIS (Wisdom)", "CHA (Charisma)"};
+                           "INT (Intelligence)", "WIS (Wisdom)", "CHA (Charisma)"};
     for (int i = 0; i < 6; i++)
     {
         cout << abilities[i] << ": " << abilityScores[i] << " (" << abilityModifiers[i] << ")" << endl;
@@ -181,6 +227,10 @@ int Character::getAttackBonus(){
 
 void Character::updateAttackBonus() {
     attackBonus++; // +1 attack bonus every level
+}
+
+void Character::updateDamageBonus(int bonus){
+    damageBonus += bonus;
 }
 
 void Character::updateAttacksPerRound() {

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <list> // For the observer list
+#include "Items.cpp"
 
 using namespace std;
 
@@ -16,13 +17,13 @@ public:
     virtual void onCharacterUpdate(Character *character) = 0; //Abstract/Pure_Virtual Function
 };
 
-class Item
-{
-public:
-    string name;
-    int bonus;
-    Item(string name, int bonus);
-};
+//class Item
+//{
+//public:
+//    string name;
+//    int bonus;
+//    Item(string name, int bonus);
+//};
 
 class Character {
 private:
@@ -66,7 +67,9 @@ public:
 
     void notifyObservers();
 
-    void equipItem(Item *item, int slot);
+    void equipItem(Equipment *item, int slot);
+
+    void use(UsableItem *item);
 
     void displayCharacter();
 
@@ -80,6 +83,8 @@ public:
 
     void updateAttackBonus();
 
+    void updateDamageBonus(int bonus );
+
     void updateAttacksPerRound();
 
     bool takeAttack(int heroDmg);
@@ -91,7 +96,7 @@ public:
 // The observer reacts to changes in the subject
 class CharacterObserver : public ICharacterObserver {
 public:
-    void onCharacterUpdate(Character *character);
+    void onCharacterUpdate(Character *character) override;
 };
 
 
