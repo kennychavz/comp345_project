@@ -1,11 +1,11 @@
 
 #include <iostream>
-#include "Part2_Map.cpp" 
+#include "Part2_Map.cpp"
 //#include "Part4_Dice.cpp" // Include Map class file
 #include "MapObserver.cpp"  // Include MapObserver class file
 //#include "Part4_MapBuilder.cpp"
 #include "A2_Part3_CampaignEditor.cpp"
-#include "Character.h"
+//#include "Part1_Character.cpp"
 #include "Part4_MapBuilder.cpp"
 //#include "GameLog.cpp"
 #include <cstdlib>
@@ -48,12 +48,12 @@ void printLog() {
         cout << "\n*********************************** GAME LOG *****************************************\n" << endl;
          //if (controllerLogging == true) {
             setUp();
-            cout << "Maps saved: " << endl; 
-            
+            cout << "Maps saved: " << endl;
+
         //}
-        //if (mapLogging == true) { 
+        //if (mapLogging == true) {
             cout << "Previous positions: " << endl;
-             
+
         //}
 
         //if (charLogging == true) {
@@ -66,7 +66,7 @@ void printLog() {
         // //}
 
         cout << "\n***************************************************************************************\n" << endl;
-    
+
 }
 
 void greetingScreen() {
@@ -88,7 +88,7 @@ void nothingScreen() {
 cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
 }
 void attackScreen(int attackDmg) {
-   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << attackDmg << "DMG ATTACK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << attackDmg << "dmg ATTACK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
 }
 void fatalScreen() {
    cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ FATAL BLOW ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
@@ -97,7 +97,7 @@ void deathScreen() {
    cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ YOU DIED ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
 }
 void defenseScreen(int attackTaken) {
-   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << attackTaken << "DMG DEFENSE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+   cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << attackTaken << "dmg DEFENSE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
 }
 
 // void characterSelection(CampaignEditor& campaign) {
@@ -298,11 +298,11 @@ void battle(Character& hero, Character& villain) {
         // attack
         res = villain.takeAttack(heroDmg);
         printBattleScene(hero, villain);
-        hstring = "Villain Damage = " + std::to_string(i);
+        hstring = "Villain Damage = " + std::to_string(heroDmg);
         attackRecord.push_back(hstring);
 
         if (res) {
-            
+
             attackRecord.push_back("Villain Defeated");
             fatalScreen();
              congratulationsScreen();
@@ -310,14 +310,14 @@ void battle(Character& hero, Character& villain) {
              // call the logs
               return;
           } else {
-            
+
             attackScreen(heroDmg);
             i += heroDmg;
             //cout << "\tVillain:" << endl;
             //villain.displayHitPoints();
             break;
           }
-    
+
           break;
 
       case 'd':
@@ -325,7 +325,7 @@ void battle(Character& hero, Character& villain) {
         res = hero.takeAttack(villainDmg);
         printBattleScene(hero, villain);
         defenseScreen(villainDmg);
-        vstring = "Hero Damage = " + std::to_string(j);
+        vstring = "Hero Damage = " + std::to_string(villainDmg);
         attackRecord.push_back(vstring);
 
         if (res) {
@@ -341,7 +341,7 @@ void battle(Character& hero, Character& villain) {
             //villain.displayHitPoints();
             break;
           }
-           
+
           break;
         break;
 
@@ -388,7 +388,7 @@ void chooseStrategy(Character& hero, Character& villain) {
       break;
     }
 
-    
+
 
 }
 
@@ -410,12 +410,37 @@ void startGame(Map& map) {
     chooseStrategy(map.hero, map.villain);
   }
 
+  cout << map.checkForEnnemies() << endl;
+  if (map.checkForItems()) {
+    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CHESS FOUND~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" << endl;
+
+    // prompt user to open the chess
+    char choice;
+    cout << "Press [x] to open the chess" << endl;
+    cin.clear();
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    cin >> choice; // Read user input into 'choice'
+    if (choice == 'x') {
+      // spawn item
+
+      // equip it
+    }
+
+    // cutscene
+
+    // spawn item
+
+    //
+    chooseStrategy(map.hero, map.villain);
+  }
+
   // check if theres is an enemy nearby
   cout << "Enter 'w' to move up, 's' to move down, 'a' to move left, 'd' to move right, or 'q' to quit: ";
   cin.clear();
   cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   cin >> choice; // Read user input into 'choice'
-
     switch (choice) {
         // case 't':
         //     map.tryMove('');
@@ -480,7 +505,7 @@ int startCampaign(CampaignEditor& campaign) {
                   cout << "Attack record: "<< endl;
                   printAttackRecord();
 
-                  cout << "Maps saved: " << endl; 
+                  cout << "Maps saved: " << endl;
                   printMapLoaded();
               }
 
@@ -499,7 +524,7 @@ int startCampaign(CampaignEditor& campaign) {
               // //cout << width << " " << height << endl;
 
               //campaign.appendMap(Map(width,height));
-              
+
               cout << "Do you want to record the game? (y/n): ";
               cin >> recordChoice;
 
