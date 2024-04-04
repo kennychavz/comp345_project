@@ -57,6 +57,8 @@ public:
     int hitPoints;
     int remainingHitPoints;
 
+    Character();
+
     Character(int level);
 
     void setBuilder(CharacterBuilder* builder);

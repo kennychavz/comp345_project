@@ -6,10 +6,9 @@
 #include <string>
 #include <cmath>
 
-
-#include "Part1_Character.cpp"
+// #include "Part1_Character.cpp"
+#include "PartOneCharacter/Character.h"
 #include "Observable.cpp"
-
 
 using std::cout;
 using std::endl;
@@ -19,7 +18,8 @@ using std::string;
 /* positions
 [1] = open space
 [2] = wall
-[3] = chest
+[3] = possible items
+[4] = chest
 */
 
 struct Position {
@@ -27,8 +27,7 @@ struct Position {
   int y;
 };
 
-vector<string> availableNames = {"Spain", "France", "Portugal", "Denmark", "Germany", "Italy", "Greece"};
-
+//vector<string> availableNames = {"Spain", "France", "Portugal", "Denmark", "Germany", "Italy", "Greece"};
 
 class Map : public Observable {
 
@@ -50,6 +49,9 @@ class Map : public Observable {
     // name
     string mapName;
 
+    // items
+    // Item items[5];
+
     // observable
     std::vector<Observer*> observers;
     Map(int width, int height) : width(width), height(height), map(vector<vector<int> >(height, vector<int>(width))) {
@@ -58,8 +60,8 @@ class Map : public Observable {
 
     // default constructor
     Map() {
-
     }
+
     // Constructor that takes a 2D matrix as argument
     Map(const vector<vector<int> >& matrix, string name) {
         map = matrix;
@@ -175,6 +177,17 @@ class Map : public Observable {
 
       CharacterObserver observer;  // Create an observer
       hero.attachObserver(&observer);  // Attach observer to character
+    }
+
+    void spawnItems() {
+      for (int i = 0; i<3; i++) {
+        Position spawnPoint = getRandomPoint();
+        map[spawnPoint.x][spawnPoint.y] = 4;
+      }
+    }
+
+    bool checkForItems() {
+      return (map[currentPosX][currentPosY] == 4);
     }
 
     bool checkForEnnemies() {
@@ -434,6 +447,8 @@ class Map : public Observable {
                 std::cout << std::setw(3) << std::setfill(' ') << "x";
               } else if (map[i][j] == 3) {
                 std::cout << std::setw(3) << std::setfill(' ') << "|";
+              } else if (map[i][j] == 4) {
+                std::cout << std::setw(3) << std::setfill(' ') << "?";
               }
           }
         std::cout << std::endl;
@@ -443,12 +458,13 @@ class Map : public Observable {
 
 };
 
-// int main() {
+ int main() {
 
-//     // make a 10x10 map
-//     cout << "\nmaking a 5x5 map" <<endl;
-//     Map myMap(10, 10); // Creating a map, and checking validity
-//     myMap.printMap(); // printing map
+    // make a 10x10 map
+    cout << "\nmaking a 5x5 map" <<endl;
+    Map myMap(10, 10); // Creating a map, and checking validity
+    myMap.printMap(); // printing map
+ }
 
 //     // // make a 15x15 map
 //     // cout << "\nmaking a 15x15 map" <<endl;

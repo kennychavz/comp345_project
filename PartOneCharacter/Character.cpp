@@ -8,9 +8,14 @@ using namespace std;
 
 Item::Item(string name, int bonus) : name(name), bonus(bonus) {}
 
+<<<<<<< Updated upstream
 
 Character::Character() : level(1), armorClass(0), attackBonus(0), damageBonus(0), attacksPerRound(1), hitPoints(10), remainingHitPoints(0) {
   
+=======
+Character::Character() : level(1), armorClass(0), attackBonus(0), damageBonus(0), attacksPerRound(1), hitPoints(10), remainingHitPoints(0) {
+}
+>>>>>>> Stashed changes
 Character::Character(int level) : level(level)
 {
     type = "Fighter";

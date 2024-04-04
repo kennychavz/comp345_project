@@ -39,6 +39,25 @@ public:
     }
 };
 
+Character::Character() {
+    level = 1; // Default level
+    type = "Fighter";
+    skill_description = "Base Fighter";
+    srand((unsigned)time(0)); // To seed the random number generator used by rand().
+    // To ensure the random number generator is seeded with a unique value based on current time.
+    // Assuming the character creation has at least 1 minute interval.
+    generateAbilityScores();
+    calculateHitPoints();
+    remainingHitPoints = hitPoints;
+    calculateArmorClass();
+    calculateAttackBonus();
+    calculateDamageBonus();
+    for (int i = 0; i < 6; i++)
+    {
+        equipment[i] = nullptr; // Initialize empty equipment slots.
+    }
+}
+
 Character::Character(int level) : level(level)
 {
     type = "Fighter";
@@ -264,4 +283,3 @@ void CharacterObserver::onCharacterUpdate(Character *character) {
     cout << "\nCharacter View Updated:\n";
     character->displayCharacter();
 }
-

@@ -56,7 +56,12 @@ public:
     int hitPoints;
     int remainingHitPoints;
 
+<<<<<<< Updated upstream
     Character();
+=======
+    // Default constructor
+    Character() {};
+>>>>>>> Stashed changes
 
     Character(int level);
 
