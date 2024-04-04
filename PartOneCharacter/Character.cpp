@@ -8,6 +8,9 @@ using namespace std;
 
 Item::Item(string name, int bonus) : name(name), bonus(bonus) {}
 
+
+Character::Character() : level(1), armorClass(0), attackBonus(0), damageBonus(0), attacksPerRound(1), hitPoints(10), remainingHitPoints(0) {
+  
 Character::Character(int level) : level(level)
 {
     type = "Fighter";
@@ -214,4 +217,3 @@ void CharacterObserver::onCharacterUpdate(Character *character) {
     cout << "\nCharacter View Updated:\n";
     character->displayCharacter();
 }
-
