@@ -6,6 +6,7 @@
 //#include "Part4_MapBuilder.cpp"
 #include "A2_Part3_CampaignEditor.cpp"
 //#include "Part1_Character.cpp"
+#include "PartOneCharacter/Character.h"
 #include "Part4_MapBuilder.cpp"
 //#include "GameLog.cpp"
 #include <cstdlib>
@@ -399,7 +400,9 @@ void startGame(Map& map) {
 
   while (true) {
   // Clear the input buffer
+  map.hero.printUI();
   map.printMap();
+
 
   //
   cout << map.checkForEnnemies() << endl;
@@ -424,16 +427,14 @@ void startGame(Map& map) {
     cin >> choice; // Read user input into 'choice'
     if (choice == 'x') {
       // spawn item
+      Item random_item = Item::generateRandomItem(map.hero);
 
       // equip it
+      map.hero.equipItem(&random_item, 2);
+      continue;
     }
-
-    // cutscene
-
-    // spawn item
-
-    //
-    chooseStrategy(map.hero, map.villain);
+    else
+      continue;
   }
 
   // check if theres is an enemy nearby
@@ -534,12 +535,16 @@ int startCampaign(CampaignEditor& campaign) {
               // // Add the observer to the map
               // campaign.campaign.addObserver(&observer);
 
-              cout << "appending the map";
+              cout << "going to spawn my items" << endl;
 
-
-              // spawn a bad person
-              campaign.campaign.spawnVillain();
-              campaign.campaign.spawnHero();
+              // // spawn a bad person
+              // cout << 1 << endl;
+              // campaign.campaign.spawnVillain();
+              // cout << 2 << endl;
+              // campaign.campaign.spawnHero();
+              // cout << 3 << endl;
+              // campaign.campaign.spawnItems();
+              // cout << 4 << endl;
 
 
               //once part is finished
@@ -574,6 +579,7 @@ int startCampaign(CampaignEditor& campaign) {
               // spawn a bad person
               map.spawnVillain();
               map.spawnHero();
+              map.spawnItems();
 
 
               startGame(map);

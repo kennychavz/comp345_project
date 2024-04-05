@@ -1,0 +1,19 @@
+int hitPoints;
+    int remainingHitPoints;
+
+bool takeAttack(int attackDmg) {
+      cout << "receiving attack" << endl;
+      if (remainingHitPoints - attackDmg < 1) {
+        remainingHitPoints = 0;
+        cout << "Fatal Blow" << endl;
+        return 1;
+      }
+      else {
+        cout << attackDmg << " ATTACK" << endl;
+        remainingHitPoints -= attackDmg;
+        return 0;
+      }
+    }
+
+
+now replace the remainign hitpoints initializations to add remaining hitpoints

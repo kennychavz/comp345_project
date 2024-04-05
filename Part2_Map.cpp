@@ -56,6 +56,10 @@ class Map : public Observable {
     std::vector<Observer*> observers;
     Map(int width, int height) : width(width), height(height), map(vector<vector<int> >(height, vector<int>(width))) {
         makeMap(width, height);
+
+        spawnHero();
+        spawnVillain();
+        spawnItems();
     }
 
     // default constructor
@@ -131,13 +135,16 @@ class Map : public Observable {
     // Function to choose a random point in a 2D array of given width and height
     Position getRandomPoint() {
       while (true) {
-        // Seed the random number generator with current time
-        srand(time(NULL));
+        // Seed the random number generator with a random device
+        std::random_device rd;
+        std::mt19937 gen(rd());
 
         // Generate random x and y coordinates within the range of width and height
-        int randomX = rand() % map.size();
-        int randomY = rand() % map[0].size();
+        std::uniform_int_distribution<int> distribX(0, map.size() - 1);
+        std::uniform_int_distribution<int> distribY(0, map[0].size() - 1);
 
+        int randomX = distribX(gen);
+        int randomY = distribY(gen);
         // Create a Point object with the random coordinates
         Position randomPoint = {randomX, randomY};
 
@@ -157,37 +164,54 @@ class Map : public Observable {
       villainX = spawnPoint.x;
       villainY = spawnPoint.y;
 
-
       // also create the character
-      cout << "creating the bad chracter" << endl;
-      Character fighter(5); // ex: Create a fighter with a given level
+      Character fighter(10); // ex: Create a fighter with a given level
       villain = fighter;
-      villain.displayCharacter(); // Display the initial character
+      //villain.displayCharacter(); // Display the initial character
 
-      CharacterObserver observer;  // Create an observer
-      villain.attachObserver(&observer);  // Attach observer to character
+      // CharacterObserver observer;  // Create an observer
+      // villain.attachObserver(&observer);  // Attach observer to character
     }
     void spawnHero() {
 
       // also create the character
-      cout << "creating the bad chracter" << endl;
-      Character fighter(5); // ex: Create a fighter with a given level
+      Character fighter(10); // ex: Create a fighter with a given level
       hero = fighter;
-      hero.displayCharacter(); // Display the initial character
+      //hero.displayCharacter(); // Display the initial character
 
-      CharacterObserver observer;  // Create an observer
-      hero.attachObserver(&observer);  // Attach observer to character
+      // CharacterObserver observer;  // Create an observer
+      // hero.attachObserver(&observer);  // Attach observer to character
     }
 
     void spawnItems() {
+      //cout << "inside of spawn items" << endl;
       for (int i = 0; i<3; i++) {
         Position spawnPoint = getRandomPoint();
-        map[spawnPoint.x][spawnPoint.y] = 4;
+        int x = spawnPoint.x;
+        int y = spawnPoint.y;
+        map[x][y] = 4;
+
       }
     }
 
     bool checkForItems() {
-      return (map[currentPosX][currentPosY] == 4);
+      if (map[currentPosX+1][currentPosY] == 4) {
+            map[currentPosX+1][currentPosY] = 1;
+            return true;
+          }
+      if (map[currentPosX-1][currentPosY] == 4) {
+        map[currentPosX-1][currentPosY] = 1;
+        return true;
+      }
+      if (map[currentPosX][currentPosY-1] == 4) {
+        map[currentPosX][currentPosY-1] = 1;
+        return true;
+      }
+      if (map[currentPosX][currentPosY+1] == 4) {
+          map[currentPosX][currentPosY+1] = 1;
+          return true;
+        }
+      return false;
     }
 
     bool checkForEnnemies() {
@@ -434,7 +458,14 @@ class Map : public Observable {
     }
     void printMap() {
       //printPos();
-      std::system("clear");
+      //std::system("clear");
+
+      // for (size_t j = 0; j < map.size(); ++j) {
+      //     for (size_t i = 0; i < map[j].size(); ++i) {
+      //         cout << map[i][j];
+      //     }
+      //     cout << endl;
+      // }
       for (size_t j = 0; j < map.size(); ++j) {
           for (size_t i = 0; i < map[j].size(); ++i) {
               if (i == currentPosX && j == currentPosY) {
@@ -446,7 +477,7 @@ class Map : public Observable {
               } else if (map[i][j] == 2) {
                 std::cout << std::setw(3) << std::setfill(' ') << "x";
               } else if (map[i][j] == 3) {
-                std::cout << std::setw(3) << std::setfill(' ') << "|";
+                std::cout << std::setw(3) << std::setfill(' ') << ".";
               } else if (map[i][j] == 4) {
                 std::cout << std::setw(3) << std::setfill(' ') << "?";
               }
@@ -458,13 +489,13 @@ class Map : public Observable {
 
 };
 
- int main() {
+//  int main() {
 
-    // make a 10x10 map
-    cout << "\nmaking a 5x5 map" <<endl;
-    Map myMap(10, 10); // Creating a map, and checking validity
-    myMap.printMap(); // printing map
- }
+//     // make a 10x10 map
+//     cout << "\nmaking a 5x5 map" <<endl;
+//     Map myMap(10, 10); // Creating a map, and checking validity
+//     myMap.printMap(); // printing map
+//  }
 
 //     // // make a 15x15 map
 //     // cout << "\nmaking a 15x15 map" <<endl;

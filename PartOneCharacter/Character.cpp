@@ -8,14 +8,49 @@ using namespace std;
 
 Item::Item(string name, int bonus) : name(name), bonus(bonus) {}
 
-<<<<<<< Updated upstream
+Item Item::generateRandomItem(Character &hero) {
+    // Sample items
+    Item items[] = {
+        Item("Steele Shield", 1),
+        Item("Sword", 2),
+        Item("Breastplate", 3),
+    };
+    int slots[] = {2,3,1};
+
+    // Generate a random index to select an item
+    int index = rand() % 3; // Assuming there are 3 possible items
+
+    Item itemFound = items[index];
+    cout << "\n~~~~~~~~~~~~~~~~~~~~Chess Contents~~~~~~~~~~~~~~~~~~" << endl;
+    itemFound.printItem();
+
+    cout << "\n\nPress [e]quip to equip it" << endl;
+
+    // prompt user to open the chess
+    char choice;
+    cin.clear();
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    cin >> choice; // Read user input into 'choice'
+
+    if (choice == 'e') {
+      hero.equipItem(&itemFound, index + 1);
+
+      cout<< "\n~~~~~~~~~~~~~~~~~You have equipped: ~~~~~~~~~~~~~~~~~" << endl;
+      itemFound.printItem();
+    }
+
+    // Return the randomly selected item
+    return itemFound;
+}
+
+void Item::printItem() {
+    std::cout << "~~~~~~~~~~~~Name: " << name << ", Bonus: " << bonus << "~~~~~~~~~~~~" << std::endl;
+}
+
 
 Character::Character() : level(1), armorClass(0), attackBonus(0), damageBonus(0), attacksPerRound(1), hitPoints(10), remainingHitPoints(0) {
-  
-=======
-Character::Character() : level(1), armorClass(0), attackBonus(0), damageBonus(0), attacksPerRound(1), hitPoints(10), remainingHitPoints(0) {
 }
->>>>>>> Stashed changes
+
 Character::Character(int level) : level(level)
 {
     type = "Fighter";
@@ -150,6 +185,43 @@ void Character::equipItem(Item *item, int slot) {
         }
         notifyObservers();
     }
+}
+
+void Character::printUI() {
+    // Print character header
+    cout << "-----------------------------------" << endl;
+    cout << "       Character Information       " << endl;
+    cout << "-----------------------------------" << endl;
+
+    // Print character details
+    cout << "Type: " << type << endl;
+    cout << "Skill: " << skill_description << endl;
+    cout << "Level: " << level << endl;
+    cout << "Hit Points: " << hitPoints << endl;
+    cout << "Armor Class: " << armorClass << endl;
+    cout << "Attack Bonus: " << attackBonus << endl;
+    cout << "Attacks Per Round: " << attacksPerRound << endl;
+    cout << "Damage Bonus: " << damageBonus << endl;
+
+    // Print ability scores
+    cout << "Ability Scores and Modifiers: " << endl;
+    string abilities[6] = {"STR (Strength)", "CON (Constitution)", "DEX (Dexterity)",
+                            "INT (Intelligence)", "WIS (Wisdom)", "CHA (Charisma)"};
+    for (int i = 0; i < 6; i++) {
+        cout << abilities[i] << ": " << abilityScores[i] << " (" << abilityModifiers[i] << ")" << endl;
+    }
+
+    // Print equipped items
+    cout << "Equipped Items: " << endl;
+    for (int i = 0; i < 6; i++) {
+        if (equipment[i] != nullptr) {
+            cout << "Slot " << i << ": ";
+            equipment[i]->printItem();
+        }
+    }
+
+    // Print character footer
+    cout << "-----------------------------------" << endl;
 }
 
 void Character::displayCharacter()

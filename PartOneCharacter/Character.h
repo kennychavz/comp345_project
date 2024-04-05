@@ -22,6 +22,9 @@ public:
     string name;
     int bonus;
     Item(string name, int bonus);
+    static Item generateRandomItem(Character &hero);
+
+    void printItem();
 };
 
 class Character {
@@ -56,12 +59,8 @@ public:
     int hitPoints;
     int remainingHitPoints;
 
-<<<<<<< Updated upstream
-    Character();
-=======
     // Default constructor
-    Character() {};
->>>>>>> Stashed changes
+    Character();
 
     Character(int level);
 
@@ -92,6 +91,8 @@ public:
     bool takeAttack(int heroDmg);
 
     void levelUp();
+
+    void printUI();
 
 };
 
