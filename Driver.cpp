@@ -421,6 +421,7 @@ int rollDice() {
 void startGame(Map& map) {
   char choice;
   int result;
+  map.hero.printUI();
   map.printMap();
 
   while (true) {
@@ -434,6 +435,7 @@ void startGame(Map& map) {
     cin.clear();
 
     while (result > 0) {
+      map.hero.printUI();
       map.printMap();
       cout << "You have " << result << " moves left." << endl;
 
@@ -553,6 +555,7 @@ int startCampaign(CampaignEditor& campaign) {
 
               std::cout << "Thank you for playing!" << std::endl;
               std::exit(EXIT_SUCCESS);
+
               return 0;
             // new game
             case 'c':
