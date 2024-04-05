@@ -51,6 +51,67 @@ public:
     }
 };
 
+class WornItem : public Character {
+
+    public:
+    Item* currentItem;
+    WornItem(Character* character) : character(character) {}
+    ~WornItem() { delete character; }
+
+    void remove() {
+        if (currentItem) {
+        delete currentItem;
+        currentItem = nullptr;
+        }
+    }
+   
+protected:
+
+    Character* character;
+};
+
+// Concrete item classes
+class Helmet : public WornItem {
+public:
+    Helmet(Character* character) : WornItem(character) {}
+
+    int getHitPoints() {
+        return character->getHitPoints()+currentItem.bonus;
+    }
+    
+};
+
+class Weapon : public WornItem {
+public:
+    Weapon(Character* character) : WornItem(character) {}
+
+    int getAttackBonus() {
+
+        return character->getAttackBonus()+currentItem.bonus;
+    }
+
+};
+
+class Shield : public WornItem {
+    Shield(Character* character) : WornItem(character) {}
+
+    int getArmorClass() {
+        return character->getArmorClass()+currentItem.bonus;
+    }
+
+}
+
+class Boots : public WornItem {
+
+    Boots(Character* character) : WornItem(character) {}
+
+    int getAbilityScores(){
+        return abilityScores[2]+currentItem.bonus;
+    }
+}
+
+
+
 //class ItemContainer
 //{
 //    std::vector<Item *> items;
