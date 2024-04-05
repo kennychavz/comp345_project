@@ -392,6 +392,29 @@ void chooseStrategy(Character& hero, Character& villain) {
 
 }
 
+int rollDice() {
+    int sumResult = 0;
+    int diceValues[4];
+    for (int i = 0; i < 4; i++) {
+        diceValues[i] = rand() % 6 + 1;
+    }
+    int lowest = 6;
+    int lowestIndex;
+    for (int i = 0; i < 4; i++) {
+        if (diceValues[i] < lowest) {
+            lowest = diceValues[i];
+            lowestIndex = i;
+        }
+    }
+    for (int i = 0; i < 4; i++) {
+        if (i == lowestIndex) continue;
+        else
+            sumResult += diceValues[i];
+    }
+
+    return sumResult;
+}
+
 
 
 void startGame(Map& map) {
@@ -401,6 +424,13 @@ void startGame(Map& map) {
 
   while (true) {
   // Clear the input buffer
+    cout << "\nHit 1 to roll the dice: ";
+    cin >> choice;
+    if (choice == '1') {
+      result = rollDice();
+    }
+
+    cin.clear();
 
     while (result > 0) {
       map.printMap();
