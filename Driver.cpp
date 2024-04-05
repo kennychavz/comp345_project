@@ -393,31 +393,64 @@ void chooseStrategy(Character& hero, Character& villain) {
 
 }
 
+int rollDice() {
+    int sumResult = 0;
+    int diceValues[4];
+    for (int i = 0; i < 4; i++) {
+        diceValues[i] = rand() % 6 + 1;
+    }
+    int lowest = 6;
+    int lowestIndex;
+    for (int i = 0; i < 4; i++) {
+        if (diceValues[i] < lowest) {
+            lowest = diceValues[i];
+            lowestIndex = i;
+        }
+    }
+    for (int i = 0; i < 4; i++) {
+        if (i == lowestIndex) continue;
+        else
+            sumResult += diceValues[i];
+    }
+
+    return sumResult;
+}
+
 
 
 void startGame(Map& map) {
   char choice;
+  int result;
+  map.printMap();
 
   while (true) {
   // Clear the input buffer
-  map.hero.printUI();
-  map.printMap();
+    cout << "\nHit 1 to roll the dice: ";
+    cin >> choice;
+    if (choice == '1') {
+      result = rollDice();
+    }
 
+    cin.clear();
 
-  //
-  cout << map.checkForEnnemies() << endl;
-  if (map.checkForEnnemies()) {
-    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VILLAIN FOUND~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" << endl;
-    chooseStrategy(map.hero, map.villain);
-  }
+    while (result > 0) {
+      map.printMap();
+      cout << "You have " << result << " moves left." << endl;
 
-  cout << map.checkForEnnemies() << endl;
-  if (map.checkForItems()) {
-    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CHESS FOUND~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" << endl;
+      //
+      cout << map.checkForEnnemies() << endl;
+      if (map.checkForEnnemies()) {
+        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VILLAIN FOUND~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" << endl;
+        chooseStrategy(map.hero, map.villain);
+      }
+
+      cout << map.checkForEnnemies() << endl;
+      if (map.checkForItems()) {
+        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CHESS FOUND~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" << endl;
 
     // prompt user to open the chess
     char choice;
@@ -437,33 +470,41 @@ void startGame(Map& map) {
       continue;
   }
 
-  // check if theres is an enemy nearby
-  cout << "Enter 'w' to move up, 's' to move down, 'a' to move left, 'd' to move right, or 'q' to quit: ";
-  cin.clear();
-  cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-  cin >> choice; // Read user input into 'choice'
-    switch (choice) {
-        // case 't':
-        //     map.tryMove('');
-        case 'w':
-            map.moveCharacter(0, -1);
-            break;
-        case 's':
-            map.moveCharacter(0, 1);
-            break;
-        case 'a':
-            map.moveCharacter(-1, 0);
-            break;
-        case 'd':
-            map.moveCharacter(1, 0);
-            break;
-        case 'q':
-            return; // Quit the function
-        default:
-            std::cout << "Invalid choice. Try again." << std::endl;
-            break;
+      // check if theres is an enemy nearby
+      cout << "Enter 'w' to move up, 's' to move down, 'a' to move left, 'd' to move right, or 'q' to quit: ";
+      cin.clear();
+      cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      cin >> choice; // Read user input into 'choice'
+        switch (choice) {
+            // case 't':
+            //     map.tryMove('');
+            case 'w':
+                map.moveCharacter(0, -1);
+                break;
+            case 's':
+                map.moveCharacter(0, 1);
+                break;
+            case 'a':
+                map.moveCharacter(-1, 0);
+                break;
+            case 'd':
+                map.moveCharacter(1, 0);
+                break;
+            case 'q':
+                return; // Quit the function
+            default:
+                std::cout << "Invalid choice. Try again." << std::endl;
+                break;
+        }
+      result--;
     }
+
   }
+
+  if (result == 0) {
+      cout << "YOU ARE OUT OF MOVES." << endl;
+      startGame(map);
+    }
 }
 
 int startCampaign(CampaignEditor& campaign) {
