@@ -467,15 +467,15 @@ void startGame(Map& map) {
                 std::cout << "Invalid choice. Try again." << std::endl;
                 break;
         }
-
-    }
-
-    if (result == 0) {
-      cout << "YOU ARE OUT OF MOVES." << endl;
-      startGame(map);
+      result--;
     }
   
   }
+
+  if (result == 0) {
+      cout << "YOU ARE OUT OF MOVES." << endl;
+      startGame(map);
+    }
 }
 
 int startCampaign(CampaignEditor& campaign) {
