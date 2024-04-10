@@ -288,7 +288,6 @@ class Map : public Observable {
             numNeighbours++;
 
           if (numNeighbours == 3) {
-
             // replace last 0 with a 3 instead
             if (arr[i+1][j] == 2)
               arr[i+1][j] = 3;
@@ -301,7 +300,6 @@ class Map : public Observable {
 
             if (arr[i][j-1] == 2)
               arr[i][j-1] = 3;
-
           }
           numNeighbours = 0;
         }
@@ -482,8 +480,10 @@ class Map : public Observable {
                 std::cout << std::setw(3) << std::setfill(' ') << "?";
               }
           }
+
         std::cout << std::endl;
       }
+        cout << "Legend: [.]: Open Space\t[x]: Forbidden Space\t[?]: Chest]\t[$]Villain" << endl;;
     }
 
 
