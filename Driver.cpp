@@ -165,12 +165,6 @@ void printInline(Character& hero, Character& villain, int heroY, int heroX, int 
     const int width = 70;
     const int height = 5;
 
-    // Define the positions of the little guy and the bad guy
-    // int heroX = 15;
-    // int heroY = height - 1;
-    // int villainX = width - 2;
-    // int villainY = 0;
-
     // retrieve hp of characters
     int villainTotalHp = villain.hitPoints;
     int villainRemainingHp = villain.remainingHitPoints;
@@ -208,7 +202,7 @@ void printInline(Character& hero, Character& villain, int heroY, int heroX, int 
 
 void printFriendly(Character &hero, Character & villain) {
 
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(750));
   for (int i = 1; i< 3; i++) {
     if (i== 3) {
       printInline(hero, villain, 4-i, 15+14*i, 5-i, 68-14*i, 'f');
@@ -217,9 +211,60 @@ void printFriendly(Character &hero, Character & villain) {
       printInline(hero, villain, 4-i, 15+14*i, 5-i, 68-14*i, 'h');
     }
     nothingScreen();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(750));
 
   }
+}
+void printRangedAttack(Character &hero, Character & villain, int arrowX, int arrowY) {
+  std::system("clear");
+
+  cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ RANGED ATTACK ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n" << endl;
+    // Define the dimensions of the battle scene
+    const int width = 70;
+    const int height = 5;
+
+    // Define the positions of the little guy and the bad guy
+    int heroX = 15;
+    int heroY = height - 1;
+    int villainX = width - 2;
+    int villainY = 0;
+
+    // retrieve hp of characters
+    int villainTotalHp = villain.hitPoints;
+    int villainRemainingHp = villain.remainingHitPoints;
+    int heroTotalHp = hero.hitPoints;
+    int heroRemainingHp = hero.remainingHitPoints;
+
+    // villain Hp
+    printHpBar(villainTotalHp, villainRemainingHp, 'v');
+
+    cout << endl;
+
+    // Print the battle scene
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            if (x == heroX && y == heroY)  {
+                // Print the little guy and the bad guy
+                cout << ":)";
+            }else if (x == arrowX && y == arrowY) {
+              cout << ">--->";
+            }
+
+            else if (x == villainX && y == villainY) {
+              cout << ">:(";
+            } else {
+                // Print empty space
+                std::cout << " ";
+            }
+        }
+        std::cout << std::endl;  // Move to the next line
+    }
+    cout << endl;
+
+    // Hero Hp
+    printHpBar(heroTotalHp, heroRemainingHp, 'h');
+
+    cout << endl;
 }
 
 
@@ -262,7 +307,6 @@ void printBattleScene(Character& hero, Character& villain) {
         }
         std::cout << std::endl;  // Move to the next line
     }
-
     cout << endl;
 
     // Hero Hp
@@ -280,10 +324,12 @@ void battle(Character& hero, Character& villain) {
   while (true) {
 
     char choice;
-    cout << "\tPress [a] to Attack \t\t\tPress [d] to Defend\t\t\t Press [f] to be Friendly\n";
+    cout << "\tPress [r] for Ranged Attack \t\t\tPress [d] to Defend\n\tPress [m] for Melee Attack\t\t\tPress [f] to be Friendly\n";
     cin.clear();
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     cin >> choice; // Read user input into 'choice'
+
+    cout << "choice is: " << choice << endl;
 
     // vars
     string vstring, hstring;
@@ -295,13 +341,43 @@ void battle(Character& hero, Character& villain) {
 
     switch (choice) {
 
-      case 'a':
+      case 'm':
         // attack
+        printFriendly(hero, villain);
         res = villain.takeAttack(heroDmg);
         printBattleScene(hero, villain);
         hstring = "Villain Damage = " + std::to_string(heroDmg);
         attackRecord.push_back(hstring);
 
+        if (res) {
+
+            attackRecord.push_back("Villain Defeated");
+            fatalScreen();
+             congratulationsScreen();
+
+             // call the logs
+              return;
+          } else {
+
+            attackScreen(heroDmg);
+            i += heroDmg;
+            //cout << "\tVillain:" << endl;
+            //villain.displayHitPoints();
+            break;
+          }
+
+          break;
+
+      case 'r':
+        res = villain.takeAttack(villainDmg * 0.5);
+
+        for (int i = 4; i>0; i--) {
+          int x = (-i*5) + 35;
+          int y = i;
+          std::this_thread::sleep_for(std::chrono::milliseconds(600));
+          printRangedAttack(hero, villain, (-i*15) + 80, i);
+        }
+        // ranged scene
         if (res) {
 
             attackRecord.push_back("Villain Defeated");
@@ -361,9 +437,7 @@ void battle(Character& hero, Character& villain) {
         //   break;
         break;
       }
-
   }
-
 }
 
 void printAttackRecord() {
@@ -388,9 +462,6 @@ void chooseStrategy(Character& hero, Character& villain) {
       std::cout << "Invalid choice. Try again." << std::endl;
       break;
     }
-
-
-
 }
 
 int rollDice() {
@@ -415,8 +486,6 @@ int rollDice() {
 
     return sumResult;
 }
-
-
 
 void startGame(Map& map) {
   char choice;
@@ -451,7 +520,7 @@ void startGame(Map& map) {
       cout << map.checkForEnnemies() << endl;
       if (map.checkForItems()) {
         cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CHESS FOUND~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CHEST FOUND~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
         cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" << endl;
 
     // prompt user to open the chess
@@ -645,6 +714,18 @@ int startCampaign(CampaignEditor& campaign) {
   };
 
 int main() {
+
+  // m
+  // Character fighter(10); // ex: Create a fighter with a given level
+  // Character hero = fighter;
+  // Character fighter2(10); // ex: Create a fighter with a given level
+  // Character villain = fighter2;
+  // battle(hero, villain);
+
+
+  // std::exit(EXIT_SUCCESS);
+
+
   std::system("clear");
   greetingScreen();
   //
