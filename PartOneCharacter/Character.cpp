@@ -21,7 +21,7 @@ Item Item::generateRandomItem(Character &hero) {
     int index = rand() % 3; // Assuming there are 3 possible items
 
     Item itemFound = items[index];
-    cout << "\n~~~~~~~~~~~~~~~~~~~~Chess Contents~~~~~~~~~~~~~~~~~~" << endl;
+    cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Contents~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
     itemFound.printItem();
 
     cout << "\n\nPress [e]quip to equip it" << endl;
@@ -35,7 +35,7 @@ Item Item::generateRandomItem(Character &hero) {
     if (choice == 'e') {
       hero.equipItem(&itemFound, index + 1);
 
-      cout<< "\n~~~~~~~~~~~~~~~~~You have equipped: ~~~~~~~~~~~~~~~~~" << endl;
+      cout<< "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~You have equipped: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
       itemFound.printItem();
     }
 
@@ -44,7 +44,7 @@ Item Item::generateRandomItem(Character &hero) {
 }
 
 void Item::printItem() {
-    std::cout << "~~~~~~~~~~~~Name: " << name << ", Bonus: " << bonus << "~~~~~~~~~~~~" << std::endl;
+    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Name: " << name << ", Bonus: " << bonus << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
 }
 
 
@@ -270,11 +270,11 @@ void Character::updateAttacksPerRound() {
 bool Character::takeAttack(int heroDmg){
     if (remainingHitPoints > heroDmg) {
         remainingHitPoints -= heroDmg;
-        return true;
+        return false;
     }
     else {
         remainingHitPoints = 0;
-        return false;
+        return true;
         cout << "\nDEBUG: Character Died!" << endl;
     }
 }

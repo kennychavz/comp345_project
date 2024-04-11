@@ -346,7 +346,7 @@ void battle(Character& hero, Character& villain) {
         printFriendly(hero, villain);
         res = villain.takeAttack(heroDmg);
         printBattleScene(hero, villain);
-        hstring = "Villain Damage = " + std::to_string(heroDmg);
+        hstring = "Hero Melee Damage = " + std::to_string(heroDmg);
         attackRecord.push_back(hstring);
 
         if (res) {
@@ -354,6 +354,24 @@ void battle(Character& hero, Character& villain) {
             attackRecord.push_back("Villain Defeated");
             fatalScreen();
              congratulationsScreen();
+
+             // retrieve item from dead body
+             // prompt user to open the chess
+              cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Villain Dropped~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+              Item random_item = Item::generateRandomItem(hero);
+              char choice;
+              // cout << "Villain dropped";
+              // random_item.printItem();
+              // cout << "\n Press [l] to loot" << endl;
+              // cin.clear();
+              // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+              // cin >> choice; // Read user input into 'choice'
+              // if (choice == 'l') {
+              //   // spawn item
+
+              //   // equip it
+              //   hero.equipItem(&random_item, 2);
+              // }
 
              // call the logs
               return;
@@ -376,6 +394,8 @@ void battle(Character& hero, Character& villain) {
           int y = i;
           std::this_thread::sleep_for(std::chrono::milliseconds(600));
           printRangedAttack(hero, villain, (-i*15) + 80, i);
+          hstring = "Hero Ranged Damage = " + std::to_string(heroDmg);
+          attackRecord.push_back(hstring);
         }
         // ranged scene
         if (res) {
@@ -383,6 +403,23 @@ void battle(Character& hero, Character& villain) {
             attackRecord.push_back("Villain Defeated");
             fatalScreen();
              congratulationsScreen();
+
+             // retrieve item from dead body
+             // prompt user to open the chess
+              cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Villain Dropped~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+              Item random_item = Item::generateRandomItem(hero);
+              char choice;
+              // random_item.printItem();
+              // cout << "\n Press [l] to loot" << endl;
+              // cin.clear();
+              // cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+              // cin >> choice; // Read user input into 'choice'
+              // if (choice == 'l') {
+              //   // spawn item
+
+              //   // equip it
+              //   hero.equipItem(&random_item, 2);
+              // }
 
              // call the logs
               return;
@@ -523,23 +560,24 @@ void startGame(Map& map) {
         cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CHEST FOUND~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
         cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" << endl;
 
-    // prompt user to open the chess
-    char choice;
-    cout << "Press [x] to open the chess" << endl;
-    cin.clear();
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    cin >> choice; // Read user input into 'choice'
-    if (choice == 'x') {
-      // spawn item
-      Item random_item = Item::generateRandomItem(map.hero);
+        // prompt user to open the chess
+        char choice;
+        cout << "Press [x] to open the chess" << endl;
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        cin >> choice; // Read user input into 'choice'
+        if (choice == 'x') {
+          // spawn item
+          Item random_item = Item::generateRandomItem(map.hero);
 
-      // equip it
-      map.hero.equipItem(&random_item, 2);
-      continue;
-    }
-    else
-      continue;
-  }
+          // equip it
+          map.hero.equipItem(&random_item, 2);
+          continue;
+        }
+
+      else
+        continue;
+      }
 
       // check if theres is an enemy nearby
       cout << "Enter 'w' to move up, 's' to move down, 'a' to move left, 'd' to move right, or 'q' to quit: ";
