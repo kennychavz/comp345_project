@@ -607,13 +607,12 @@ void startGame(Map& map) {
         }
       result--;
     }
-
-  }
-
-  if (result == 0) {
+    if (result == 0) {
       cout << "YOU ARE OUT OF MOVES." << endl;
       startGame(map);
     }
+
+  }
 }
 
 int startCampaign(CampaignEditor& campaign) {
