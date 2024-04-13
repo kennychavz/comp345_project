@@ -13,6 +13,7 @@
 #include <filesystem>
 #include <thread>
 #include <chrono>
+#include <deque>
 
 namespace fs = std::filesystem;
 using std::exit;
@@ -68,6 +69,25 @@ void printLog() {
 
         cout << "\n***************************************************************************************\n" << endl;
 
+}
+
+std::deque<std::string> actions;
+void addAction(const std::string& action) {
+        if (actions.size() >= 5) {
+            actions.pop_front();
+        }
+        actions.push_back(action);
+}
+
+ void printLastActions() {
+    if(!actions.empty()) {
+      // Clear the console
+        //std::cout << "\033[2J\033[H";
+        std::cout << "\nLast 5 actions:" << std::endl;
+        for (const auto& action : actions) {
+            std::cout << action << std::endl;
+        }
+    }
 }
 
 void greetingScreen() {
@@ -313,9 +333,17 @@ void printBattleScene(Character& hero, Character& villain) {
     printHpBar(heroTotalHp, heroRemainingHp, 'h');
 
     cout << endl;
-
 }
 
+vector <string> itemsFound;
+
+void printItemsFound() {
+  for (string item : itemsFound) {
+        std::cout << item << endl;
+    }
+    std::cout << std::endl;
+
+}
 
 vector <string> attackRecord;
 
@@ -348,10 +376,12 @@ void battle(Character& hero, Character& villain) {
         printBattleScene(hero, villain);
         hstring = "Hero Melee Damage = " + std::to_string(heroDmg);
         attackRecord.push_back(hstring);
+        addAction(hstring);
 
         if (res) {
 
             attackRecord.push_back("Villain Defeated");
+            addAction("Villain Defeated");
             fatalScreen();
              congratulationsScreen();
 
@@ -396,11 +426,13 @@ void battle(Character& hero, Character& villain) {
           printRangedAttack(hero, villain, (-i*15) + 80, i);
           hstring = "Hero Ranged Damage = " + std::to_string(heroDmg);
           attackRecord.push_back(hstring);
+          addAction(hstring);
         }
         // ranged scene
         if (res) {
 
             attackRecord.push_back("Villain Defeated");
+            addAction("Villain Defeated");
             fatalScreen();
              congratulationsScreen();
 
@@ -441,9 +473,11 @@ void battle(Character& hero, Character& villain) {
         defenseScreen(villainDmg);
         vstring = "Hero Damage = " + std::to_string(villainDmg);
         attackRecord.push_back(vstring);
+        addAction(vstring);
 
         if (res) {
               attackRecord.push_back("YOU DIED");
+              addAction("YOU DIED");
               fatalScreen();
              defeatScreen();
 
@@ -544,6 +578,8 @@ void startGame(Map& map) {
       map.hero.printUI();
       map.printMap();
       cout << "You have " << result << " moves left." << endl;
+      printLastActions();
+      
 
       //
       cout << map.checkForEnnemies() << endl;
@@ -572,6 +608,8 @@ void startGame(Map& map) {
 
           // equip it
           map.hero.equipItem(&random_item, 2);
+          itemsFound.push_back(random_item.getName()+ ", Bonus: " + to_string(random_item.getBonus()));
+          addAction(random_item.getName()+ " equipped with a bonus of " + to_string(random_item.getBonus()));
           continue;
         }
 
@@ -604,6 +642,7 @@ void startGame(Map& map) {
             default:
                 std::cout << "Invalid choice. Try again." << std::endl;
                 break;
+            //addAction(printPastPos);
         }
       result--;
     }
@@ -657,6 +696,9 @@ int startCampaign(CampaignEditor& campaign) {
 
                   cout << "Maps saved: " << endl;
                   printMapLoaded();
+
+                  cout << "Items equipped: " << endl;
+                  printItemsFound();
               }
 
               std::cout << "Thank you for playing!" << std::endl;
