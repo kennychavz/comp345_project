@@ -8,6 +8,15 @@ using namespace std;
 
 Item::Item(string name, int bonus) : name(name), bonus(bonus) {}
 
+string Item::getName() {
+        return name;
+    }
+
+int Item::getBonus() {
+    return bonus;
+}
+
+
 Item Item::generateRandomItem(Character &hero) {
     // Sample items
     Item items[] = {

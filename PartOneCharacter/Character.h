@@ -23,6 +23,8 @@ public:
     int bonus;
     Item(string name, int bonus);
     static Item generateRandomItem(Character &hero);
+    string getName();
+    int getBonus();
 
     void printItem();
 };
